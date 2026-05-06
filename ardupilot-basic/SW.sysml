@@ -1,5 +1,4 @@
 package SW {
-
 	
 	private import HAMR::*;
 	private import SequenceFunctions::*;
@@ -64,59 +63,59 @@ package SW {
 			integration
 
 				assume valid_tx_message_port0 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 0":
-					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx0.amessage) and
-					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx0)) or
-					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx0.amessage) and
+					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx0.amessage) &
+					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx0)) |
+					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx0.amessage) &
 					GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTx0.amessage,EthernetFramesTx0))
 					;
 
 				assume valid_tx_message_port1 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 1":
-					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx1.amessage) and 
-					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx1)) or
-					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx1.amessage) and 
+					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx1.amessage) &
+					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx1)) |
+					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx1.amessage) &
 					GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTx1.amessage,EthernetFramesTx1))
 					;
 
 				assume valid_tx_message_port2 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 2":
-					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx2.amessage) and 
-					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx2)) or
-					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx2.amessage) and 
+					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx2.amessage) &
+					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx2)) |
+					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx2.amessage) &
 					GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTx2.amessage,EthernetFramesTx2))
 					;
 
 				assume valid_tx_message_port3 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 3":
-					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx3.amessage) and
-					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx3)) or
-					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx3.amessage) or
+					(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTx3.amessage) &
+					GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTx3)) |
+					(GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTx3.amessage) &
 					GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTx3.amessage,EthernetFramesTx3))
 					;
 
 				guarantee valid_message_port0 "Only valid messages being sent to the RxFirewall Port 0":
 					GumboLib::GUMBO__Library::valid_arp(EthernetFramesRx0)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx0)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx0)
-					or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx0)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx0)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx0)
+					| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx0)
 					;
 
 				guarantee valid_message_port1 "Only valid messages being sent to the RxFirewall Port 1":
 					GumboLib::GUMBO__Library::valid_arp(EthernetFramesRx1)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx1)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx1)
-					or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx1)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx1)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx1)
+					| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx1)
 					;
 
 				guarantee valid_message_port2 "Only valid messages being sent to the RxFirewall Port 2":
 					GumboLib::GUMBO__Library::valid_arp(EthernetFramesRx2)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx2)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx2)
-					or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx2)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx2)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx2)
+					| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx2)
 					;
 
 				guarantee valid_message_port3 "Only valid messages being sent to the RxFirewall Port 3":
 					GumboLib::GUMBO__Library::valid_arp(EthernetFramesRx3)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx3)
-					or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx3)
-					or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx3)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRx3)
+					| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRx3)
+					| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRx3)
 					;
           
 		}*/
@@ -181,93 +180,93 @@ package SW {
 
 			  	assume valid_message_port0 "Only valid messages being sent to the RxFirewall Port 0":
 			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)
-			  		or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)
+			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)
 					;
 
 			  	assume valid_message_port1 "Only valid messages being sent to the RxFirewall Port 1":
 			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)
-			  		or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)
+			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)
 					;
 
 			  	assume valid_message_port2  "Only valid messages being sent to the RxFirewall Port 2":
 			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)
-			  		or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)
+			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)
 					;
 
 			  	assume valid_message_port3 "Only valid messages being sent to the RxFirewall Port 3":
 			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)
-			  		or GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)
-			  		or not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)
+			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)
+			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)
 					;
           
 			compute
 	
 		        guarantee hlr_05_rx0_can_send_arp_to_vmm:
-		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)) implies 
-		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) and NoSend(MavlinkOut0)));
+		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)) implies
+		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) & NoSend(MavlinkOut0)));
 		        guarantee hlr_18_rx0_can_send_mavlink_udp:
-		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)) implies 
-		            (HasEvent(MavlinkOut0) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn0, MavlinkOut0) and NoSend(VmmOut0)));
+		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)) implies
+		            (HasEvent(MavlinkOut0) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn0, MavlinkOut0) & NoSend(VmmOut0)));
 		        guarantee hlr_13_rx0_can_send_ipv4_udp:
-		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)) implies 
-		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) and NoSend(MavlinkOut0)));
+		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)) implies
+		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) & NoSend(MavlinkOut0)));
 		        guarantee hlr_15_rx0_disallow:
-			       (HasEvent(EthernetFramesRxIn0) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)) implies 
-			         (NoSend(VmmOut0) and NoSend(MavlinkOut0));
+			       (HasEvent(EthernetFramesRxIn0) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)) implies
+			         (NoSend(VmmOut0) & NoSend(MavlinkOut0));
 		        guarantee hlr_17_rx0_no_input:
-		           (not HasEvent(EthernetFramesRxIn0) implies (NoSend(VmmOut0) and NoSend(MavlinkOut0)));
+		           (HasEvent(EthernetFramesRxIn0) | (NoSend(VmmOut0) & NoSend(MavlinkOut0)));
 		
 		        guarantee hlr_05_rx1_can_send_arp_to_vmm:
-		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)) implies 
-		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) and NoSend(MavlinkOut1)));
+		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)) implies
+		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) & NoSend(MavlinkOut1)));
 		        guarantee hlr_18_rx1_can_send_mavlink_udp:
-		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)) implies 
-		            (HasEvent(MavlinkOut1) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn1, MavlinkOut1) and NoSend(VmmOut1)));
+		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)) implies
+		            (HasEvent(MavlinkOut1) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn1, MavlinkOut1) & NoSend(VmmOut1)));
 		        guarantee hlr_13_rx1_can_send_ipv4_udp:
-		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)) implies 
-		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) and NoSend(MavlinkOut1)));
+		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)) implies
+		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) & NoSend(MavlinkOut1)));
 		        guarantee hlr_15_rx1_disallow:
-			       (HasEvent(EthernetFramesRxIn1) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)) implies 
-			         (NoSend(VmmOut1) and NoSend(MavlinkOut1));
+			       (HasEvent(EthernetFramesRxIn1) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)) implies
+			         (NoSend(VmmOut1) & NoSend(MavlinkOut1));
 		        guarantee hlr_17_rx1_no_input:
-		           (not HasEvent(EthernetFramesRxIn1) implies (NoSend(VmmOut1) and NoSend(MavlinkOut1)));
+		           (HasEvent(EthernetFramesRxIn1) | (NoSend(VmmOut1) & NoSend(MavlinkOut1)));
 		
 		        guarantee hlr_05_rx2_can_send_arp_to_vmm:
-		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)) implies 
-		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) and NoSend(MavlinkOut2)));
+		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)) implies
+		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) & NoSend(MavlinkOut2)));
 		        guarantee hlr_18_rx2_can_send_mavlink_udp:
-		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)) implies 
-		            (HasEvent(MavlinkOut2) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn2, MavlinkOut2) and NoSend(VmmOut2)));
+		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)) implies
+		            (HasEvent(MavlinkOut2) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn2, MavlinkOut2) & NoSend(VmmOut2)));
 		        guarantee hlr_13_rx2_can_send_ipv4_udp:
-		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)) implies 
-		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) and NoSend(MavlinkOut2)));
+		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)) implies
+		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) & NoSend(MavlinkOut2)));
 		        guarantee hlr_15_rx2_disallow:
-			       (HasEvent(EthernetFramesRxIn2) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)) implies 
-			         (NoSend(VmmOut2) and NoSend(MavlinkOut2));
+			       (HasEvent(EthernetFramesRxIn2) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)) implies
+			         (NoSend(VmmOut2) & NoSend(MavlinkOut2));
 		        guarantee hlr_17_rx2_no_input:
-		           (not HasEvent(EthernetFramesRxIn2) implies (NoSend(VmmOut2) and NoSend(MavlinkOut2)));
+		           (HasEvent(EthernetFramesRxIn2) | (NoSend(VmmOut2) & NoSend(MavlinkOut2)));
 		
 		        guarantee hlr_05_rx3_can_send_arp_to_vmm:
-		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)) implies 
-		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) and NoSend(MavlinkOut3)));
+		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)) implies
+		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) & NoSend(MavlinkOut3)));
 		        guarantee hlr_18_rx3_can_send_mavlink_udp:
-		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)) implies 
-		            (HasEvent(MavlinkOut3) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn3, MavlinkOut3) and NoSend(VmmOut3)));
+		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)) implies
+		            (HasEvent(MavlinkOut3) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn3, MavlinkOut3) & NoSend(VmmOut3)));
 		        guarantee hlr_13_rx3_can_send_ipv4_udp:
-		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)) implies 
-		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) and NoSend(MavlinkOut3)));
+		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)) implies
+		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) & NoSend(MavlinkOut3)));
 		        guarantee hlr_15_rx3_disallow:
-			       (HasEvent(EthernetFramesRxIn3) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)) implies 
-			         (NoSend(VmmOut3) and NoSend(MavlinkOut3));
+			       (HasEvent(EthernetFramesRxIn3) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)) implies
+			         (NoSend(VmmOut3) & NoSend(MavlinkOut3));
 		        guarantee hlr_17_rx3_no_input:
-		           (not HasEvent(EthernetFramesRxIn3) implies (NoSend(VmmOut3) and NoSend(MavlinkOut3)));
+		           (HasEvent(EthernetFramesRxIn3) | (NoSend(VmmOut3) & NoSend(MavlinkOut3)));
 		 }*/
 	}
 	
@@ -335,23 +334,23 @@ package SW {
 			integration
 
 			  	guarantee valid_tx_out_message_port0 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 0":
-			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut0.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut0))
-			  		or (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut0.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut0.amessage,EthernetFramesTxOut0))
+			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut0.amessage) & GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut0))
+			  		| (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut0.amessage) & GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut0.amessage,EthernetFramesTxOut0))
             		;
 
 			  	guarantee valid_tx_out_message_port1 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 1":
-			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut1.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut1))
-			  		or (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut1.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut1.amessage,EthernetFramesTxOut1))
+			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut1.amessage) & GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut1))
+			  		| (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut1.amessage) & GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut1.amessage,EthernetFramesTxOut1))
             		;
 
 			  	guarantee valid_tx_out_message_port2 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 2":
-			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut2.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut2))
-			  		or (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut2.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut2.amessage,EthernetFramesTxOut2))
+			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut2.amessage) & GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut2))
+			  		| (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut2.amessage) & GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut2.amessage,EthernetFramesTxOut2))
             		;
 
 			  	guarantee valid_tx_out_message_port3 "Only valid ARP and IPV4 size messages transmitted by TxFirewall Port 3":
-			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut3.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut3))
-			  		or (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut3.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut3.amessage,EthernetFramesTxOut3))
+			  		(GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxOut3.amessage) & GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut3))
+			  		| (GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxOut3.amessage) & GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxOut3.amessage,EthernetFramesTxOut3))
             		;
           
 	    compute
@@ -366,7 +365,7 @@ package SW {
 		       (HasEvent(EthernetFramesTxIn0) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn0)) implies 
 		         (NoSend(EthernetFramesTxOut0));
 	        guarantee hlr_16_tx0_no_input:
-	           (not HasEvent(EthernetFramesTxIn0) implies NoSend(EthernetFramesTxOut0));
+	           (HasEvent(EthernetFramesTxIn0) | NoSend(EthernetFramesTxOut0));
 	
 	        guarantee hlr_07_tx1_can_send_valid_arp:
 	          ((HasEvent(EthernetFramesTxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn1)) implies 
@@ -378,7 +377,7 @@ package SW {
 		       (HasEvent(EthernetFramesTxIn1) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn1)) implies 
 		         (NoSend(EthernetFramesTxOut1));
 	        guarantee hlr_16_tx1_no_input:
-	           (not HasEvent(EthernetFramesTxIn1) implies NoSend(EthernetFramesTxOut1));
+	           (HasEvent(EthernetFramesTxIn1) | NoSend(EthernetFramesTxOut1));
 	
 	        guarantee hlr_07_tx2_can_send_valid_arp:
 	          ((HasEvent(EthernetFramesTxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn2)) implies 
@@ -390,7 +389,7 @@ package SW {
 		       (HasEvent(EthernetFramesTxIn2) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn2)) implies 
 		         (NoSend(EthernetFramesTxOut2));
 	        guarantee hlr_16_tx2_no_input:
-	           (not HasEvent(EthernetFramesTxIn2) implies NoSend(EthernetFramesTxOut2));
+	           (HasEvent(EthernetFramesTxIn2) | NoSend(EthernetFramesTxOut2));
 	
 	        guarantee hlr_07_tx3_can_send_valid_arp:
 	          ((HasEvent(EthernetFramesTxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn3)) implies 
@@ -402,7 +401,7 @@ package SW {
 		       (HasEvent(EthernetFramesTxIn3) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn3)) implies 
 		         (NoSend(EthernetFramesTxOut3));
 	        guarantee hlr_16_tx3_no_input:
-	           (not HasEvent(EthernetFramesTxIn3) implies NoSend(EthernetFramesTxOut3));
+	           (HasEvent(EthernetFramesTxIn3) | NoSend(EthernetFramesTxOut3));
 	           	  
 		}*/
 	}
@@ -473,7 +472,7 @@ package SW {
 					((HasEvent(In0) and not msg_is_wellformed(In0.payload)) implies
 						(NoSend(Out0)));
 				guarantee hlr_21_mav0_no_input:
-				   (not HasEvent(In0) implies (NoSend(Out0)));
+				   (HasEvent(In0) | NoSend(Out0));
 				guarantee hlr_22_mav0_allow:
 				   (HasEvent(In0) and msg_is_wellformed(In0.payload) and not msg_is_blacklisted(In0.payload)) implies
 				     (HasEvent(Out0) and GumboLib::GUMBO__Library::mav_input_eq_output(In0, Out0));
@@ -485,7 +484,7 @@ package SW {
 					((HasEvent(In1) and not msg_is_wellformed(In1.payload)) implies
 						(NoSend(Out1)));
 				guarantee hlr_21_mav1_no_input:
-				   (not HasEvent(In1) implies (NoSend(Out1)));
+				   (HasEvent(In1) | NoSend(Out1));
 				guarantee hlr_22_mav1_allow:
 				   (HasEvent(In1) and msg_is_wellformed(In1.payload) and not msg_is_blacklisted(In1.payload)) implies
 				     (HasEvent(Out1) and GumboLib::GUMBO__Library::mav_input_eq_output(In1, Out1));
@@ -497,7 +496,7 @@ package SW {
 					((HasEvent(In2) and not msg_is_wellformed(In2.payload)) implies
 						(NoSend(Out2)));
 				guarantee hlr_21_mav2_no_input:
-				   (not HasEvent(In2) implies (NoSend(Out2)));
+				   (HasEvent(In2) | NoSend(Out2));
 				guarantee hlr_22_mav2_allow:
 				   (HasEvent(In2) and msg_is_wellformed(In2.payload) and not msg_is_blacklisted(In2.payload)) implies
 				     (HasEvent(Out2) and GumboLib::GUMBO__Library::mav_input_eq_output(In2, Out2));
@@ -509,7 +508,7 @@ package SW {
 					((HasEvent(In3) and not msg_is_wellformed(In3.payload)) implies
 						(NoSend(Out3)));
 				guarantee hlr_21_mav3_no_input:
-				   (not HasEvent(In3) implies (NoSend(Out3)));
+				   (HasEvent(In3) | NoSend(Out3));
 				guarantee hlr_22_mav3_allow:
 				   (HasEvent(In3) and msg_is_wellformed(In3.payload) and not msg_is_blacklisted(In3.payload)) implies
 				     (HasEvent(Out3) and GumboLib::GUMBO__Library::mav_input_eq_output(In3, Out3));
@@ -548,7 +547,7 @@ package SW {
 		attribute :>> Domain = 6;
 	}
 	
-	part def ArduPilot :> Thread {
+	part def ArduPilot_MOCK :> Thread {
 		port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
 		port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
 		port FirewallRx2 : EventDataPort { in :>> type : RawEthernetMessage; }
@@ -566,9 +565,12 @@ package SW {
 		attribute :>> Period = 1000 [ms]; 
 		attribute :>> Compute_Execution_Time = 600[ms] .. 600 [ms];
 		attribute :>> Stack_Size = 1048576[byte];
+	}
+
+	part def ArduPilot :> ArduPilot_MOCK {
 		attribute :>> SMC = true;
 	}
-	
+
 	part def ArduPilot_seL4 :> Process {
 		port FirewallRx0 : EventDataPort { in :>> type : RawEthernetMessage; }
 		port FirewallRx1 : EventDataPort { in :>> type : RawEthernetMessage; }
@@ -583,7 +585,11 @@ package SW {
 		port EthernetFramesTx2 : EventDataPort { out :>> type : RawEthernetMessage; }
 		port EthernetFramesTx3 : EventDataPort { out :>> type : RawEthernetMessage; }
 	
-		part ArduPilot : SW::ArduPilot;
+	    // qemu arm does not support ARM SMC forwarding so use the mock, non-vmm ardupilot
+		part ArduPilot : SW::ArduPilot_MOCK;
+
+		//part ArduPilot : SW::ArduPilot;
+
 		
 		connection c1 : PortConnection 
 			connect FirewallRx0 to ArduPilot.FirewallRx0;

@@ -1,10 +1,11 @@
-//@ HAMR: --platform Microkit --output-dir hamr
+//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir hamr/microkit_dev
+//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir hamr/microkit_initial
 package Platform {
 	private import HAMR::*;
 	private import SW::*;
 	
 	part def Proc :> Processor {
-		attribute :>> Frame_Period = 1850 [ms];
+		attribute :>> Frame_Period = 1950 [ms];
 		attribute :>> Clock_Period = 2 [ms];
 		attribute :>> Max_Domain = 6;
 	}

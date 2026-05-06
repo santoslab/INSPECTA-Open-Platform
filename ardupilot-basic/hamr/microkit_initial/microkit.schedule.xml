@@ -1,0 +1,14 @@
+<!-- This file will not be overwritten if HAMR codegen is rerun -->
+
+<domain_schedule>
+  <domain name="domain_1" length="30" /> <!-- pacer -->
+  <domain name="domain_2" length="600" /> <!-- seL4_ArduPilot_ArduPilot_MON -->
+  <domain name="domain_1" length="30" /> <!-- pacer -->
+  <domain name="domain_3" length="300" /> <!-- seL4_TxFirewall_TxFirewall_MON -->
+  <domain name="domain_1" length="30" /> <!-- pacer -->
+  <domain name="domain_4" length="300" /> <!-- seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_MON -->
+  <domain name="domain_1" length="30" /> <!-- pacer -->
+  <domain name="domain_5" length="300" /> <!-- seL4_RxFirewall_RxFirewall_MON -->
+  <domain name="domain_1" length="30" /> <!-- pacer -->
+  <domain name="domain_6" length="300" /> <!-- seL4_MavlinkFirewall_MavlinkFirewall_MON -->
+</domain_schedule>
