@@ -1,0 +1,4 @@
+[submodule "ardupilot-basic/hamr/microkit/vmm/deps/libvmm"]
+	path = ardupilot-basic/hamr/microkit/vmm/deps/libvmm
+	url = https://github.com/au-ts/libvmm.git
+	branch = ef493a66a0847a8bcaf8dd70067e56143510d383
