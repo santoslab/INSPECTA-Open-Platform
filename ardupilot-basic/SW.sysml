@@ -208,64 +208,64 @@ package SW {
           
 			compute
 	
-		        guarantee hlr_05_rx0_can_send_arp_to_vmm:
+		        guarantee hlr_05_rx0_can_send_arp_to_vmm "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)) implies
 		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) & NoSend(MavlinkOut0)));
-		        guarantee hlr_18_rx0_can_send_mavlink_udp:
+		        guarantee hlr_18_rx0_can_send_mavlink_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)) implies
 		            (HasEvent(MavlinkOut0) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn0, MavlinkOut0) & NoSend(VmmOut0)));
-		        guarantee hlr_13_rx0_can_send_ipv4_udp:
+		        guarantee hlr_13_rx0_can_send_ipv4_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn0) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)) implies
 		            (HasEvent(VmmOut0) and (EthernetFramesRxIn0 == VmmOut0) & NoSend(MavlinkOut0)));
-		        guarantee hlr_15_rx0_disallow:
+		        guarantee hlr_15_rx0_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 			       (HasEvent(EthernetFramesRxIn0) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)) implies
 			         (NoSend(VmmOut0) & NoSend(MavlinkOut0));
-		        guarantee hlr_17_rx0_no_input:
+		        guarantee hlr_17_rx0_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		           (HasEvent(EthernetFramesRxIn0) | (NoSend(VmmOut0) & NoSend(MavlinkOut0)));
 		
-		        guarantee hlr_05_rx1_can_send_arp_to_vmm:
+		        guarantee hlr_05_rx1_can_send_arp_to_vmm "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)) implies
 		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) & NoSend(MavlinkOut1)));
-		        guarantee hlr_18_rx1_can_send_mavlink_udp:
+		        guarantee hlr_18_rx1_can_send_mavlink_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)) implies
 		            (HasEvent(MavlinkOut1) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn1, MavlinkOut1) & NoSend(VmmOut1)));
-		        guarantee hlr_13_rx1_can_send_ipv4_udp:
+		        guarantee hlr_13_rx1_can_send_ipv4_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn1) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)) implies
 		            (HasEvent(VmmOut1) and (EthernetFramesRxIn1 == VmmOut1) & NoSend(MavlinkOut1)));
-		        guarantee hlr_15_rx1_disallow:
+		        guarantee hlr_15_rx1_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 			       (HasEvent(EthernetFramesRxIn1) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)) implies
 			         (NoSend(VmmOut1) & NoSend(MavlinkOut1));
-		        guarantee hlr_17_rx1_no_input:
+		        guarantee hlr_17_rx1_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		           (HasEvent(EthernetFramesRxIn1) | (NoSend(VmmOut1) & NoSend(MavlinkOut1)));
 		
-		        guarantee hlr_05_rx2_can_send_arp_to_vmm:
+		        guarantee hlr_05_rx2_can_send_arp_to_vmm "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)) implies
 		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) & NoSend(MavlinkOut2)));
-		        guarantee hlr_18_rx2_can_send_mavlink_udp:
+		        guarantee hlr_18_rx2_can_send_mavlink_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)) implies
 		            (HasEvent(MavlinkOut2) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn2, MavlinkOut2) & NoSend(VmmOut2)));
-		        guarantee hlr_13_rx2_can_send_ipv4_udp:
+		        guarantee hlr_13_rx2_can_send_ipv4_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn2) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)) implies
 		            (HasEvent(VmmOut2) and (EthernetFramesRxIn2 == VmmOut2) & NoSend(MavlinkOut2)));
-		        guarantee hlr_15_rx2_disallow:
+		        guarantee hlr_15_rx2_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 			       (HasEvent(EthernetFramesRxIn2) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)) implies
 			         (NoSend(VmmOut2) & NoSend(MavlinkOut2));
-		        guarantee hlr_17_rx2_no_input:
+		        guarantee hlr_17_rx2_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		           (HasEvent(EthernetFramesRxIn2) | (NoSend(VmmOut2) & NoSend(MavlinkOut2)));
 		
-		        guarantee hlr_05_rx3_can_send_arp_to_vmm:
+		        guarantee hlr_05_rx3_can_send_arp_to_vmm "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)) implies
 		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) & NoSend(MavlinkOut3)));
-		        guarantee hlr_18_rx3_can_send_mavlink_udp:
+		        guarantee hlr_18_rx3_can_send_mavlink_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)) implies
 		            (HasEvent(MavlinkOut3) and GumboLib::GUMBO__Library::input_eq_mav_output(EthernetFramesRxIn3, MavlinkOut3) & NoSend(VmmOut3)));
-		        guarantee hlr_13_rx3_can_send_ipv4_udp:
+		        guarantee hlr_13_rx3_can_send_ipv4_udp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
 		          ((HasEvent(EthernetFramesRxIn3) and GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)) implies
 		            (HasEvent(VmmOut3) and (EthernetFramesRxIn3 == VmmOut3) & NoSend(MavlinkOut3)));
-		        guarantee hlr_15_rx3_disallow:
+		        guarantee hlr_15_rx3_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 			       (HasEvent(EthernetFramesRxIn3) and not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)) implies
 			         (NoSend(VmmOut3) & NoSend(MavlinkOut3));
-		        guarantee hlr_17_rx3_no_input:
+		        guarantee hlr_17_rx3_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4":
 		           (HasEvent(EthernetFramesRxIn3) | (NoSend(VmmOut3) & NoSend(MavlinkOut3)));
 		 }*/
 	}
@@ -355,52 +355,52 @@ package SW {
           
 	    compute
 	
-	      	guarantee hlr_07_tx0_can_send_valid_arp:
-	          ((HasEvent(EthernetFramesTxIn0) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn0)) implies 
+	      	guarantee hlr_07_tx0_can_send_valid_arp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn0) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn0)) implies
 	            (HasEvent(EthernetFramesTxOut0) and (EthernetFramesTxIn0 == EthernetFramesTxOut0.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut0)));
-	        guarantee hlr_12_tx0_can_send_valid_ipv4:
-	          ((HasEvent(EthernetFramesTxIn0) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn0)) implies 
+	        guarantee hlr_12_tx0_can_send_valid_ipv4 "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn0) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn0)) implies
 	            (HasEvent(EthernetFramesTxOut0) and (EthernetFramesTxIn0 == EthernetFramesTxOut0.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxIn0, EthernetFramesTxOut0) ));
-	        guarantee hlr_14_tx0_disallow:
-		       (HasEvent(EthernetFramesTxIn0) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn0)) implies 
+	        guarantee hlr_14_tx0_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
+		       (HasEvent(EthernetFramesTxIn0) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn0)) implies
 		         (NoSend(EthernetFramesTxOut0));
-	        guarantee hlr_16_tx0_no_input:
+	        guarantee hlr_16_tx0_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 	           (HasEvent(EthernetFramesTxIn0) | NoSend(EthernetFramesTxOut0));
 	
-	        guarantee hlr_07_tx1_can_send_valid_arp:
-	          ((HasEvent(EthernetFramesTxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn1)) implies 
+	        guarantee hlr_07_tx1_can_send_valid_arp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn1) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn1)) implies
 	            (HasEvent(EthernetFramesTxOut1) and (EthernetFramesTxIn1 == EthernetFramesTxOut1.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut1) ));
-	        guarantee hlr_12_tx1_can_send_valid_ipv4:
-	          ((HasEvent(EthernetFramesTxIn1) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn1)) implies 
+	        guarantee hlr_12_tx1_can_send_valid_ipv4 "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn1) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn1)) implies
 	            (HasEvent(EthernetFramesTxOut1) and (EthernetFramesTxIn1 == EthernetFramesTxOut1.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxIn1, EthernetFramesTxOut1) ));
-	        guarantee hlr_14_tx1_disallow:
-		       (HasEvent(EthernetFramesTxIn1) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn1)) implies 
+	        guarantee hlr_14_tx1_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
+		       (HasEvent(EthernetFramesTxIn1) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn1)) implies
 		         (NoSend(EthernetFramesTxOut1));
-	        guarantee hlr_16_tx1_no_input:
+	        guarantee hlr_16_tx1_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 	           (HasEvent(EthernetFramesTxIn1) | NoSend(EthernetFramesTxOut1));
 	
-	        guarantee hlr_07_tx2_can_send_valid_arp:
-	          ((HasEvent(EthernetFramesTxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn2)) implies 
+	        guarantee hlr_07_tx2_can_send_valid_arp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn2) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn2)) implies
 	            (HasEvent(EthernetFramesTxOut2) and (EthernetFramesTxIn2 == EthernetFramesTxOut2.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut2) ));
-	        guarantee hlr_12_tx2_can_send_valid_ipv4:
-	          ((HasEvent(EthernetFramesTxIn2) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn2)) implies 
+	        guarantee hlr_12_tx2_can_send_valid_ipv4 "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn2) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn2)) implies
 	            (HasEvent(EthernetFramesTxOut2) and (EthernetFramesTxIn2 == EthernetFramesTxOut2.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxIn2, EthernetFramesTxOut2) ));
-	        guarantee hlr_14_tx2_disallow:
-		       (HasEvent(EthernetFramesTxIn2) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn2)) implies 
+	        guarantee hlr_14_tx2_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
+		       (HasEvent(EthernetFramesTxIn2) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn2)) implies
 		         (NoSend(EthernetFramesTxOut2));
-	        guarantee hlr_16_tx2_no_input:
+	        guarantee hlr_16_tx2_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 	           (HasEvent(EthernetFramesTxIn2) | NoSend(EthernetFramesTxOut2));
 	
-	        guarantee hlr_07_tx3_can_send_valid_arp:
-	          ((HasEvent(EthernetFramesTxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn3)) implies 
+	        guarantee hlr_07_tx3_can_send_valid_arp "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn3) and GumboLib::GUMBO__Library::valid_arp(EthernetFramesTxIn3)) implies
 	            (HasEvent(EthernetFramesTxOut3) and (EthernetFramesTxIn3 == EthernetFramesTxOut3.amessage) and GumboLib::GUMBO__Library::valid_output_arp_size(EthernetFramesTxOut3) ));
-	        guarantee hlr_12_tx3_can_send_valid_ipv4:
-	          ((HasEvent(EthernetFramesTxIn3) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn3)) implies 
+	        guarantee hlr_12_tx3_can_send_valid_ipv4 "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5":
+	          ((HasEvent(EthernetFramesTxIn3) and GumboLib::GUMBO__Library::valid_ipv4(EthernetFramesTxIn3)) implies
 	            (HasEvent(EthernetFramesTxOut3) and (EthernetFramesTxIn3 == EthernetFramesTxOut3.amessage) and GumboLib::GUMBO__Library::valid_output_ipv4_size(EthernetFramesTxIn3, EthernetFramesTxOut3) ));
-	        guarantee hlr_14_tx3_disallow:
-		       (HasEvent(EthernetFramesTxIn3) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn3)) implies 
+	        guarantee hlr_14_tx3_disallow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
+		       (HasEvent(EthernetFramesTxIn3) and not GumboLib::GUMBO__Library::tx_allow_outbound_frame(EthernetFramesTxIn3)) implies
 		         (NoSend(EthernetFramesTxOut3));
-	        guarantee hlr_16_tx3_no_input:
+	        guarantee hlr_16_tx3_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 	           (HasEvent(EthernetFramesTxIn3) | NoSend(EthernetFramesTxOut3));
 	           	  
 		}*/
@@ -465,51 +465,51 @@ package SW {
 
 			compute
 	
-				guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader:
+				guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 					((HasEvent(In0) and msg_is_wellformed(In0.payload) and msg_is_mav_cmd_flash_bootloader(In0.payload)) implies
 						(NoSend(Out0)));
-				guarantee hlr_20_mav0_drop_malformed_msg:
+				guarantee hlr_20_mav0_drop_malformed_msg "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 					((HasEvent(In0) and not msg_is_wellformed(In0.payload)) implies
 						(NoSend(Out0)));
-				guarantee hlr_21_mav0_no_input:
+				guarantee hlr_21_mav0_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In0) | NoSend(Out0));
-				guarantee hlr_22_mav0_allow:
+				guarantee hlr_22_mav0_allow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In0) and msg_is_wellformed(In0.payload) and not msg_is_blacklisted(In0.payload)) implies
 				     (HasEvent(Out0) and GumboLib::GUMBO__Library::mav_input_eq_output(In0, Out0));
 
-				guarantee hlr_19_mav1_drop_mav_cmd_flash_bootloader:
+				guarantee hlr_19_mav1_drop_mav_cmd_flash_bootloader "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 					((HasEvent(In1) and msg_is_wellformed(In1.payload) and msg_is_mav_cmd_flash_bootloader(In1.payload)) implies
 						(NoSend(Out1)));
-				guarantee hlr_20_mav1_drop_malformed_msg:
+				guarantee hlr_20_mav1_drop_malformed_msg "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 					((HasEvent(In1) and not msg_is_wellformed(In1.payload)) implies
 						(NoSend(Out1)));
-				guarantee hlr_21_mav1_no_input:
+				guarantee hlr_21_mav1_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In1) | NoSend(Out1));
-				guarantee hlr_22_mav1_allow:
+				guarantee hlr_22_mav1_allow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In1) and msg_is_wellformed(In1.payload) and not msg_is_blacklisted(In1.payload)) implies
 				     (HasEvent(Out1) and GumboLib::GUMBO__Library::mav_input_eq_output(In1, Out1));
 
-				guarantee hlr_19_mav2_drop_mav_cmd_flash_bootloader:
+				guarantee hlr_19_mav2_drop_mav_cmd_flash_bootloader "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 					((HasEvent(In2) and msg_is_wellformed(In2.payload) and msg_is_mav_cmd_flash_bootloader(In2.payload)) implies
 						(NoSend(Out2)));
-				guarantee hlr_20_mav2_drop_malformed_msg:
+				guarantee hlr_20_mav2_drop_malformed_msg "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 					((HasEvent(In2) and not msg_is_wellformed(In2.payload)) implies
 						(NoSend(Out2)));
-				guarantee hlr_21_mav2_no_input:
+				guarantee hlr_21_mav2_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In2) | NoSend(Out2));
-				guarantee hlr_22_mav2_allow:
+				guarantee hlr_22_mav2_allow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In2) and msg_is_wellformed(In2.payload) and not msg_is_blacklisted(In2.payload)) implies
 				     (HasEvent(Out2) and GumboLib::GUMBO__Library::mav_input_eq_output(In2, Out2));
 
-				guarantee hlr_19_mav3_drop_mav_cmd_flash_bootloader:
+				guarantee hlr_19_mav3_drop_mav_cmd_flash_bootloader "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6":
 					((HasEvent(In3) and msg_is_wellformed(In3.payload) and msg_is_mav_cmd_flash_bootloader(In3.payload)) implies
 						(NoSend(Out3)));
-				guarantee hlr_20_mav3_drop_malformed_msg:
+				guarantee hlr_20_mav3_drop_malformed_msg "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 					((HasEvent(In3) and not msg_is_wellformed(In3.payload)) implies
 						(NoSend(Out3)));
-				guarantee hlr_21_mav3_no_input:
+				guarantee hlr_21_mav3_no_input "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In3) | NoSend(Out3));
-				guarantee hlr_22_mav3_allow:
+				guarantee hlr_22_mav3_allow "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7":
 				   (HasEvent(In3) and msg_is_wellformed(In3.payload) and not msg_is_blacklisted(In3.payload)) implies
 				     (HasEvent(Out3) and GumboLib::GUMBO__Library::mav_input_eq_output(In3, Out3));
 		}*/			

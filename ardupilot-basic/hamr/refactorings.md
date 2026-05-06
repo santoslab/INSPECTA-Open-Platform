@@ -84,6 +84,32 @@ Converted GUMBO contracts from short-circuit KerML operators (`and`, `or`, `impl
 **MavlinkFirewall compute** (4 of 16 guarantees):
 - hlr_21: `not HasEvent(X) implies NoSend(Y)` to `HasEvent(X) | NoSend(Y)`
 
+## HLR Deep Links in GUMBO Guarantee Descriptions (SW.sysml)
+
+Added optional description strings to all `guarantee hlr_*` clauses in the GUMBO compute contracts, linking each to the corresponding page of the natural-language high-level requirements document (`requirements/Inspecta-HLRs.pdf`) hosted via GitHub Pages.
+
+Example:
+```
+guarantee hlr_05_rx0_can_send_arp_to_vmm
+    "https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3":
+```
+
+| HLR | Requirement | Page |
+|-----|-------------|------|
+| hlr_05 | Rx: copy ARP to VMM output | 3 |
+| hlr_13 | Rx: copy whitelisted UDP to VMM output | 3 |
+| hlr_18 | Rx: copy MAVLink UDP to MavlinkFirewall output | 4 |
+| hlr_15 | Rx: do not copy disallowed frame | 4 |
+| hlr_17 | Rx: no output on empty input | 4 |
+| hlr_07 | Tx: copy ARP frame | 5 |
+| hlr_12 | Tx: copy IPv4 frame | 5 |
+| hlr_14 | Tx: do not copy disallowed frame | 6 |
+| hlr_16 | Tx: no output on empty input | 6 |
+| hlr_19 | Mav: drop flash_bootloader command | 6 |
+| hlr_20 | Mav: drop malformed MAVLink message | 7 |
+| hlr_21 | Mav: no output on empty input | 7 |
+| hlr_22 | Mav: copy well-formed, non-blacklisted message | 7 |
+
 ### Operators intentionally kept as short-circuit
 
 - `HasEvent(X) and pred(X)` -- gates access to unwrapped event data port values
