@@ -66,11 +66,6 @@ pub fn testComputeCB(
   // Initialize the app
   crate::seL4_RxFirewall_RxFirewall_initialize();
 
-  // [CheckPre]: check/filter based on pre-condition.
-  if !GUMBOX::compute_CEP_Pre (api_EthernetFramesRxIn0, api_EthernetFramesRxIn1, api_EthernetFramesRxIn2, api_EthernetFramesRxIn3) {
-    return HarnessResult::RejectedPrecondition;
-  }
-
   // [PutInPorts]: Set values on the input ports
   put_EthernetFramesRxIn0(api_EthernetFramesRxIn0);
   put_EthernetFramesRxIn1(api_EthernetFramesRxIn1);

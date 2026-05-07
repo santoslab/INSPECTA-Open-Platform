@@ -176,35 +176,42 @@ package SW {
 
 		language "GUMBO" /*{
 
-			integration
-
-			  	assume valid_message_port0 "Only valid messages being sent to the RxFirewall Port 0":
-			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)
-			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)
-					;
-
-			  	assume valid_message_port1 "Only valid messages being sent to the RxFirewall Port 1":
-			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)
-			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)
-					;
-
-			  	assume valid_message_port2  "Only valid messages being sent to the RxFirewall Port 2":
-			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)
-			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)
-					;
-
-			  	assume valid_message_port3 "Only valid messages being sent to the RxFirewall Port 3":
-			  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)
-			  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)
-			  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)
-					;
+			// integration assumptions removed:
+			// 1. Each assume is a tautology. rx_allow_outbound_frame is defined as
+			//    valid_arp | valid_ipv4_udp_mavlink | valid_ipv4_udp_port, which are
+			//    the same three predicates in each assume. The full expression reduces
+			//    to A | B | C | !(A | B | C) = P | !P = true for every input.
+			// 2. The RxFirewall receives arbitrary network traffic, so assuming only
+			//    valid messages is inappropriate for a firewall component.
+			//integration
+			//
+			//  	assume valid_message_port0 "Only valid messages being sent to the RxFirewall Port 0":
+			//  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn0)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn0)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn0)
+			//  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn0)
+			//		;
+			//
+			//  	assume valid_message_port1 "Only valid messages being sent to the RxFirewall Port 1":
+			//  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn1)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn1)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn1)
+			//  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn1)
+			//		;
+			//
+			//  	assume valid_message_port2  "Only valid messages being sent to the RxFirewall Port 2":
+			//  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn2)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn2)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn2)
+			//  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn2)
+			//		;
+			//
+			//  	assume valid_message_port3 "Only valid messages being sent to the RxFirewall Port 3":
+			//  		GumboLib::GUMBO__Library::valid_arp(EthernetFramesRxIn3)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_mavlink(EthernetFramesRxIn3)
+			//  		| GumboLib::GUMBO__Library::valid_ipv4_udp_port(EthernetFramesRxIn3)
+			//  		| not GumboLib::GUMBO__Library::rx_allow_outbound_frame(EthernetFramesRxIn3)
+			//		;
           
 			compute
 	

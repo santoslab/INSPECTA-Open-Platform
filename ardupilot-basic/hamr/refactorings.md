@@ -115,3 +115,35 @@ guarantee hlr_05_rx0_can_send_arp_to_vmm
 - `HasEvent(X) and pred(X)` -- gates access to unwrapped event data port values
 - `implies` where the consequent accesses port values (hlr_05/07/12/13/18/22)
 - `implies` where the antecedent contains short-circuit `and` (hlr_14/15/19/20) -- converting just moves the ITE under `not`, no net benefit
+
+## Removed RxFirewall Integration Assumes (SW.sysml)
+
+Commented out all four `assume valid_message_port{0..3}` integration constraints on the RxFirewall's input ports. Each assumed:
+
+```
+valid_arp(EthernetFramesRxIn_N)
+| valid_ipv4_udp_mavlink(EthernetFramesRxIn_N)
+| valid_ipv4_udp_port(EthernetFramesRxIn_N)
+| not rx_allow_outbound_frame(EthernetFramesRxIn_N)
+```
+
+These were removed for two reasons:
+
+1. **The constraint is a tautology.** In GumboLib, `rx_allow_outbound_frame` is defined as:
+
+   ```
+   rx_allow_outbound_frame(frame) =
+       valid_arp(frame) | valid_ipv4_udp_mavlink(frame) | valid_ipv4_udp_port(frame)
+   ```
+
+   This is the disjunction of the same three predicates that appear as the first three disjuncts in the assume. Substituting `A = valid_arp`, `B = valid_ipv4_udp_mavlink`, `C = valid_ipv4_udp_port`:
+
+   ```
+   assume = A | B | C | not (A | B | C)
+          = P | not P       where P = (A | B | C)
+          = true
+   ```
+
+   The fourth disjunct (`not rx_allow_outbound_frame`) catches every frame that the first three miss, so the expression is true for every possible input. It provides no actual filtering of test vectors.
+
+2. **A firewall should not assume valid input.** The RxFirewall sits on the network receive path and must handle arbitrary, potentially malformed, or malicious Ethernet frames. Constraining inputs to only "valid messages" contradicts the component's purpose. The compute guarantees already specify the correct behavior for all input categories (valid ARP, valid MAVLink UDP, valid whitelisted UDP, disallowed frames, and no input), which is the appropriate place to express the firewall's requirements.
