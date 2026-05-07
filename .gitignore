@@ -3,3 +3,6 @@
 /**/target
 /**/.slang
 /**/*.merged
+**/mutants.out*
+**/*profraw*
+**/*profdata*

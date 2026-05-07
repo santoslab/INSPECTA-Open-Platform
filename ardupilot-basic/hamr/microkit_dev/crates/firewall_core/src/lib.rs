@@ -1,4 +1,6 @@
 #![cfg_attr(not(test), no_std)]
+#![feature(proc_macro_hygiene)]
+#![cfg_attr(not(verus_keep_ghost), feature(stmt_expr_attributes))]
 
 use vstd::prelude::*;
 use vstd::slice::slice_subrange;
@@ -7,56 +9,62 @@ mod net;
 pub use net::{Address, ArpOp, HardwareType, Ipv4Address};
 pub use net::{Arp, EtherType, EthernetRepr, IpProtocol, Ipv4Repr, TcpRepr, UdpRepr};
 
+// Type definitions stay in verus! because spec functions use Verus-specific
+// arrow accessors (e.g. ->Ipv4_0) that are only generated inside verus!.
+// The parse() method is moved outside for mutation testing.
 verus! {
 
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
-pub enum PacketType {
-    Arp(Arp),
-    Ipv4(Ipv4Packet),
-    Ipv6,
+    #[cfg_attr(test, derive(PartialEq))]
+    #[derive(Debug)]
+    pub enum PacketType {
+        Arp(Arp),
+        Ipv4(Ipv4Packet),
+        Ipv6,
+    }
+
+    #[cfg_attr(test, derive(PartialEq))]
+    #[derive(Debug)]
+    pub enum Ipv4ProtoPacket {
+        Tcp(TcpRepr),
+        Udp(UdpRepr),
+        HopByHop,
+        Icmp,
+        Igmp,
+        Ipv6Route,
+        Ipv6Frag,
+        Icmpv6,
+        Ipv6NoNxt,
+        Ipv6Opts,
+    }
+
+    #[cfg_attr(test, derive(PartialEq))]
+    #[derive(Debug)]
+    pub struct Ipv4Packet {
+        pub header: Ipv4Repr,
+        pub protocol: Ipv4ProtoPacket,
+    }
+
+    #[cfg_attr(test, derive(PartialEq))]
+    #[derive(Debug)]
+    pub struct EthFrame {
+        pub header: EthernetRepr,
+        pub eth_type: PacketType,
+    }
+
+    pub const ARP_TOTAL: usize = EthernetRepr::SIZE + Arp::SIZE;
+    pub const IPV4_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE;
+    pub const TCP_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE + TcpRepr::SIZE;
+    pub const UDP_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE + UdpRepr::SIZE;
+
 }
 
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
-pub enum Ipv4ProtoPacket {
-    Tcp(TcpRepr),
-    Udp(UdpRepr),
-    HopByHop,
-    Icmp,
-    Igmp,
-    Ipv6Route,
-    Ipv6Frag,
-    Icmpv6,
-    Ipv6NoNxt,
-    Ipv6Opts,
-}
-
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
-pub struct Ipv4Packet {
-    pub header: Ipv4Repr,
-    pub protocol: Ipv4ProtoPacket,
-}
-
-#[cfg_attr(test, derive(PartialEq))]
-#[derive(Debug)]
-pub struct EthFrame {
-    pub header: EthernetRepr,
-    pub eth_type: PacketType,
-}
-
-pub const ARP_TOTAL: usize = EthernetRepr::SIZE + Arp::SIZE;
-pub const IPV4_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE;
-pub const TCP_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE + TcpRepr::SIZE;
-pub const UDP_TOTAL: usize = EthernetRepr::SIZE + Ipv4Repr::SIZE + UdpRepr::SIZE;
-
+#[verus_verify]
 impl EthFrame {
-    pub fn parse(frame: &[u8]) -> (r: Option<EthFrame>)
+    #[verus_spec(r =>
         requires
             frame@.len() >= TCP_TOTAL,
             frame@.len() >= UDP_TOTAL,
-            frame@.len() >= ARP_TOTAL
+            frame@.len() >= ARP_TOTAL,
         ensures
             valid_arp_frame(frame) == res_is_arp(r),
             valid_ipv4_frame(frame) == res_is_ipv4(r),
@@ -66,7 +74,8 @@ impl EthFrame {
             valid_tcp_frame(frame) ==> tcp_port_bytes_match(frame, r),
             valid_udp_frame(frame) ==> udp_port_bytes_match(frame, r),
             valid_ipv4_frame(frame) ==> ipv4_length_bytes_match(frame, r),
-    {
+    )]
+    pub fn parse(frame: &[u8]) -> Option<EthFrame> {
         let header = EthernetRepr::parse(slice_subrange(frame, 0, EthernetRepr::SIZE))?;
         let eth_type = match header.ethertype {
              EtherType::Arp => {
@@ -105,90 +114,92 @@ impl EthFrame {
     }
 }
 
-pub open spec fn ipv4_valid_length(p: PacketType) -> bool
-{
-    p->Ipv4_0.header.length <= net::MAX_MTU
-}
+verus! {
 
-pub open spec fn valid_arp_frame(frame: &[u8]) -> bool
-{
-    net::frame_dst_addr_valid(frame@)
-    && net::frame_is_wellformed_eth2(frame)
-    && net::frame_arp(frame)
-    && net::wellformed_arp_frame(frame@)
-}
+    pub open spec fn ipv4_valid_length(p: PacketType) -> bool
+    {
+        p->Ipv4_0.header.length <= net::MAX_MTU
+    }
 
-pub open spec fn valid_ipv4_frame(frame: &[u8]) -> bool
-{
-    net::frame_dst_addr_valid(frame@)
-    && net::frame_is_wellformed_eth2(frame)
-    && net::frame_ipv4(frame)
-    && net::wellformed_ipv4_frame(frame@)
-}
+    pub open spec fn valid_arp_frame(frame: &[u8]) -> bool
+    {
+        net::frame_dst_addr_valid(frame@)
+        && net::frame_is_wellformed_eth2(frame)
+        && net::frame_arp(frame)
+        && net::wellformed_arp_frame(frame@)
+    }
 
-pub open spec fn valid_ipv6_frame(frame: &[u8]) -> bool
-{
-    net::frame_dst_addr_valid(frame@)
-    && net::frame_is_wellformed_eth2(frame)
-    && net::frame_ipv6(frame)
-}
+    pub open spec fn valid_ipv4_frame(frame: &[u8]) -> bool
+    {
+        net::frame_dst_addr_valid(frame@)
+        && net::frame_is_wellformed_eth2(frame)
+        && net::frame_ipv4(frame)
+        && net::wellformed_ipv4_frame(frame@)
+    }
 
-pub open spec fn valid_tcp_frame(frame: &[u8]) -> bool
-{
-    valid_ipv4_frame(frame) && net::ipv4_is_tcp(frame@)
-}
+    pub open spec fn valid_ipv6_frame(frame: &[u8]) -> bool
+    {
+        net::frame_dst_addr_valid(frame@)
+        && net::frame_is_wellformed_eth2(frame)
+        && net::frame_ipv6(frame)
+    }
 
-pub open spec fn valid_udp_frame(frame: &[u8]) -> bool
-{
-    valid_ipv4_frame(frame) && net::ipv4_is_udp(frame@)
-}
+    pub open spec fn valid_tcp_frame(frame: &[u8]) -> bool
+    {
+        valid_ipv4_frame(frame) && net::ipv4_is_tcp(frame@)
+    }
 
-pub open spec fn res_is_arp(r: Option<EthFrame>) -> bool
-{
-    r.is_some() && r.unwrap().eth_type is Arp
-}
+    pub open spec fn valid_udp_frame(frame: &[u8]) -> bool
+    {
+        valid_ipv4_frame(frame) && net::ipv4_is_udp(frame@)
+    }
 
-pub open spec fn res_is_ipv4(r: Option<EthFrame>) -> bool
-{
-    r.is_some() && r.unwrap().eth_type is Ipv4
-}
+    pub open spec fn res_is_arp(r: Option<EthFrame>) -> bool
+    {
+        r.is_some() && r.unwrap().eth_type is Arp
+    }
 
-pub open spec fn res_is_ipv6(r: Option<EthFrame>) -> bool
-{
-    r.is_some() && r.unwrap().eth_type is Ipv6
-}
+    pub open spec fn res_is_ipv4(r: Option<EthFrame>) -> bool
+    {
+        r.is_some() && r.unwrap().eth_type is Ipv4
+    }
 
-pub open spec fn res_is_tcp(r: Option<EthFrame>) -> bool
-{
-    r.is_some() && r.unwrap().eth_type is Ipv4 &&
-        r.unwrap().eth_type->Ipv4_0.protocol is Tcp
-}
+    pub open spec fn res_is_ipv6(r: Option<EthFrame>) -> bool
+    {
+        r.is_some() && r.unwrap().eth_type is Ipv6
+    }
 
-pub open spec fn res_is_udp(r: Option<EthFrame>) -> bool
-{
-    r.is_some() && r.unwrap().eth_type is Ipv4 &&
-        r.unwrap().eth_type->Ipv4_0.protocol is Udp
-}
+    pub open spec fn res_is_tcp(r: Option<EthFrame>) -> bool
+    {
+        r.is_some() && r.unwrap().eth_type is Ipv4 &&
+            r.unwrap().eth_type->Ipv4_0.protocol is Tcp
+    }
 
-pub open spec fn tcp_port_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
-{
-    net::spec_u16_from_be_bytes(frame@.subrange(36, 38)) ==
-        r.unwrap().eth_type->Ipv4_0.protocol->Tcp_0.dst_port
-}
+    pub open spec fn res_is_udp(r: Option<EthFrame>) -> bool
+    {
+        r.is_some() && r.unwrap().eth_type is Ipv4 &&
+            r.unwrap().eth_type->Ipv4_0.protocol is Udp
+    }
 
-pub open spec fn udp_port_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
-{
-    (net::spec_u16_from_be_bytes(frame@.subrange(36, 38)) ==
-        r.unwrap().eth_type->Ipv4_0.protocol->Udp_0.dst_port) &&
-    (net::spec_u16_from_be_bytes(frame@.subrange(34, 36)) ==
-        r.unwrap().eth_type->Ipv4_0.protocol->Udp_0.src_port)
-}
+    pub open spec fn tcp_port_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
+    {
+        net::spec_u16_from_be_bytes(frame@.subrange(36, 38)) ==
+            r.unwrap().eth_type->Ipv4_0.protocol->Tcp_0.dst_port
+    }
 
-pub open spec fn ipv4_length_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
-{
-    net::spec_u16_from_be_bytes(frame@.subrange(16, 18)) ==
-        r.unwrap().eth_type->Ipv4_0.header.length
-}
+    pub open spec fn udp_port_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
+    {
+        (net::spec_u16_from_be_bytes(frame@.subrange(36, 38)) ==
+            r.unwrap().eth_type->Ipv4_0.protocol->Udp_0.dst_port) &&
+        (net::spec_u16_from_be_bytes(frame@.subrange(34, 36)) ==
+            r.unwrap().eth_type->Ipv4_0.protocol->Udp_0.src_port)
+    }
+
+    pub open spec fn ipv4_length_bytes_match(frame: &[u8], r: Option<EthFrame>) -> bool
+    {
+        net::spec_u16_from_be_bytes(frame@.subrange(16, 18)) ==
+            r.unwrap().eth_type->Ipv4_0.header.length
+    }
 
 }
 
@@ -453,7 +464,7 @@ mod eth_frame_tests {
         frame[23] = 0x11;
         if let PacketType::Ipv4(pack) = &mut expected.eth_type {
             pack.header.protocol = IpProtocol::Udp;
-            pack.protocol = Ipv4ProtoPacket::Udp(UdpRepr { dst_port: 443 });
+            pack.protocol = Ipv4ProtoPacket::Udp(UdpRepr { src_port: 0xc473, dst_port: 443 });
         }
         let res = EthFrame::parse(&frame);
         assert_eq!(res.as_ref(), Some(&expected));

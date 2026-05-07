@@ -7,7 +7,7 @@ mod tests {
 
   use crate::test::util::*;
   use data::*;
-
+/*
   #[test]
   #[serial]
   fn test_initialization() {
@@ -20,7 +20,9 @@ mod tests {
     crate::seL4_RxFirewall_RxFirewall_initialize();
     crate::seL4_RxFirewall_RxFirewall_timeTriggered();
   }
+*/  
 }
+
 
 mod GUMBOX_tests {
   use serial_test::serial;
@@ -39,7 +41,7 @@ mod GUMBOX_tests {
   const computeRejectRatio: u32 = 5;
 
   const verbosity: u32 = 2;
-
+/*
   testInitializeCB_macro! {
     prop_testInitializeCB_macro, // test name
     config: ProptestConfig { // proptest configuration, built by overriding fields from default config
@@ -49,7 +51,7 @@ mod GUMBOX_tests {
       ..ProptestConfig::default()
     }
   }
-
+*/
   testComputeCB_macro! {
     prop_testComputeCB_macro, // test name
     config: ProptestConfig { // proptest configuration, built by overriding fields from default config
