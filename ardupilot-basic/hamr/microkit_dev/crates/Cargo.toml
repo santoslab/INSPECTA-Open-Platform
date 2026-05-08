@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "data",
+    "GumboLib",
+    "firewall_core",
+    "seL4_RxFirewall_RxFirewall",
+]
+resolver = "2"
