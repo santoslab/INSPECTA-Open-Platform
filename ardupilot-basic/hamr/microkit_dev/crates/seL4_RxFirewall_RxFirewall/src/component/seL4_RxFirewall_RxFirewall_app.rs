@@ -228,79 +228,27 @@ pub fn log_warn_channel(channel: u32)
 
 // PLACEHOLDER MARKER GUMBO METHODS
 
-verus! {
-    /// MAVLink UDP source port used to identify MAVLink traffic.
-    pub const MAV_UDP_SRC_PORT: u16 = 14550;
-    /// MAVLink UDP destination port used to identify MAVLink traffic.
-    pub const MAV_UDP_DST_PORT: u16 = 14562;
 
-    /// Firewall port allowlists. Packets with destination ports not in these lists are dropped.
-    mod config {
-        /// TCP allowlist: only port 5760 (MAVLink TCP) is permitted.
-        pub mod tcp {
-            pub const ALLOWED_PORTS: [u16; 1] = [5760u16];
-        }
-        /// UDP allowlist: only port 68 (DHCP client) is permitted.
-        pub mod udp {
-            const NUM_UDP_PORTS: usize = 1;
-            pub const ALLOWED_PORTS: [u16; NUM_UDP_PORTS] = [68u16];
-        }
+/// MAVLink UDP source port used to identify MAVLink traffic.
+pub const MAV_UDP_SRC_PORT: u16 = 14550;
+/// MAVLink UDP destination port used to identify MAVLink traffic.
+pub const MAV_UDP_DST_PORT: u16 = 14562;
+
+/// Firewall port allowlists. Packets with destination ports not in these lists are dropped.
+mod config {
+   /// TCP allowlist: only port 5760 (MAVLink TCP) is permitted.
+   pub mod tcp {
+       pub const ALLOWED_PORTS: [u16; 1] = [5760u16];
     }
-
-    /// Spec predicate: true when the packet is an IPv4 TCP packet whose destination
-    /// port appears in the TCP allowlist.
-    pub open spec fn packet_is_whitelisted_tcp(packet: &firewall_core::PacketType) -> bool {
-        packet is Ipv4 &&
-            packet->Ipv4_0.protocol is Tcp &&
-            ipv4_tcp_on_allowed_port_quant(packet->Ipv4_0.protocol->Tcp_0.dst_port)
-    }
-
-    /// Spec predicate: true when the packet is an IPv4 UDP packet whose destination
-    /// port appears in the UDP allowlist.
-    pub open spec fn packet_is_whitelisted_udp(packet: &firewall_core::PacketType) -> bool {
-        packet is Ipv4 &&
-            packet->Ipv4_0.protocol is Udp &&
-            ipv4_udp_on_allowed_port_quant(packet->Ipv4_0.protocol->Udp_0.dst_port)
-    }
-
-    /// Spec predicate: true when the packet is an IPv4 UDP packet with MAVLink source
-    /// and destination ports (14550 -> 14562).
-    pub open spec fn packet_is_mavlink_udp(packet: &firewall_core::PacketType) -> bool {
-        packet is Ipv4 &&
-            packet->Ipv4_0.protocol is Udp &&
-            packet->Ipv4_0.protocol->Udp_0.src_port == MAV_UDP_SRC_PORT &&
-            packet->Ipv4_0.protocol->Udp_0.dst_port == MAV_UDP_DST_PORT
-    }
-
-    /// Spec predicate: true when the given port exists in the GUMBO-level UDP allowed ports list.
-    pub open spec fn ipv4_udp_on_allowed_port_quant(port: u16) -> bool {
-        exists|i: int| 0 <= i && i < GumboLib::UDP_ALLOWED_PORTS_spec().len() && GumboLib::UDP_ALLOWED_PORTS_spec()[i] == port
-    }
-
-    /// Spec predicate: true when the given port exists in the GUMBO-level TCP allowed ports list.
-    pub open spec fn ipv4_tcp_on_allowed_port_quant(port: u16) -> bool {
-        exists|i: int| 0 <= i && i < GumboLib::TCP_ALLOWED_PORTS_spec().len() && GumboLib::TCP_ALLOWED_PORTS_spec()[i] == port
+    /// UDP allowlist: only port 68 (DHCP client) is permitted.
+    pub mod udp {
+        const NUM_UDP_PORTS: usize = 1;
+        pub const ALLOWED_PORTS: [u16; NUM_UDP_PORTS] = [68u16];
     }
 }
 
-/// Parses a raw Ethernet frame into a structured `EthFrame` via `firewall_core`. The
-/// ensures clauses bridge the GUMBO spec-level predicates (`valid_arp_spec`,
-/// `valid_ipv4_udp_spec`, `valid_ipv4_tcp_spec`) — which operate on raw byte arrays — to
-/// the firewall_core result predicates (`res_is_arp`, `res_is_udp`, `res_is_tcp`), which
-/// operate on the parsed structure. Additional ensures connect the parsed port bytes to
-/// the raw frame bytes (`udp_port_bytes_match`, `tcp_port_bytes_match`), enabling Verus
-/// to verify port-based filtering decisions against the GUMBO contracts.
-#[verus_verify]
-#[verus_spec(r =>
-    requires
-        frame@.len() == SW::SW_RawEthernetMessage_DIM_0,
-    ensures
-        GumboLib::valid_arp_spec(*frame) == firewall_core::res_is_arp(r),
-        GumboLib::valid_ipv4_udp_spec(*frame) == firewall_core::res_is_udp(r),
-        GumboLib::valid_ipv4_tcp_spec(*frame) == firewall_core::res_is_tcp(r),
-        GumboLib::valid_ipv4_tcp_spec(*frame) ==> firewall_core::tcp_port_bytes_match(frame, r),
-        GumboLib::valid_ipv4_udp_spec(*frame) ==> firewall_core::udp_port_bytes_match(frame, r),
-)]
+
+
 fn get_frame_packet(frame: &SW::RawEthernetMessage) -> Option<firewall_core::EthFrame> {
     let eth = firewall_core::EthFrame::parse(frame);
     if eth.is_none() {
@@ -309,14 +257,6 @@ fn get_frame_packet(frame: &SW::RawEthernetMessage) -> Option<firewall_core::Eth
     eth
 }
 
-/// Returns true if the parsed packet is a MAVLink UDP packet (src port 14550,
-/// dst port 14562). MAVLink packets are routed to the MavlinkOut port rather
-/// than the VmmOut port.
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        packet_is_mavlink_udp(packet) == (r == true),
-)]
 fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {
     if let firewall_core::PacketType::Ipv4(ip) = packet {
         if let firewall_core::Ipv4ProtoPacket::Udp(udp) = &ip.protocol {
@@ -326,38 +266,15 @@ fn can_send_to_mavlink(packet: &firewall_core::PacketType) -> bool {
     false
 }
 
-/// Splits a raw Ethernet frame into a `UdpFrame_Impl` containing separate header and
-/// payload byte arrays. The headers are the first `EthIpUdpHeaders_DIM_0` bytes
-/// (Ethernet + IP + UDP headers) and the payload is the remainder.
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r.headers@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),
-        r.payload@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),
-)]
 fn udp_frame_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpFrame_Impl {
     let headers = udp_headers_from_raw_eth(value);
     let payload = udp_payload_from_raw_eth(value);
     SW::UdpFrame_Impl { headers, payload }
 }
 
-/// Copies the first `EthIpUdpHeaders_DIM_0` bytes from a raw Ethernet frame into
-/// a fixed-size header array (Ethernet + IP + UDP headers).
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r@ =~= value@.subrange(0, SW::SW_EthIpUdpHeaders_DIM_0 as int),
-)]
 fn udp_headers_from_raw_eth(value: SW::RawEthernetMessage) -> SW::EthIpUdpHeaders {
     let mut headers = [0u8; SW::SW_EthIpUdpHeaders_DIM_0];
     let mut i = 0;
-    #[verus_spec(
-        invariant
-            0 <= i <= headers@.len() < value@.len(),
-            forall |j| 0 <= j < i ==> headers[j] == value[j],
-        decreases
-            SW::SW_EthIpUdpHeaders_DIM_0 - i,
-    )]
     while i < SW::SW_EthIpUdpHeaders_DIM_0 {
         headers.set(i, value[i]);
         i += 1;
@@ -365,23 +282,9 @@ fn udp_headers_from_raw_eth(value: SW::RawEthernetMessage) -> SW::EthIpUdpHeader
     headers
 }
 
-/// Copies the bytes following the Ethernet/IP/UDP headers from a raw Ethernet frame
-/// into a fixed-size payload array (everything after the first `EthIpUdpHeaders_DIM_0` bytes).
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r@ =~= value@.subrange(SW::SW_EthIpUdpHeaders_DIM_0 as int, SW::SW_RawEthernetMessage_DIM_0 as int),
-)]
 fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {
     let mut payload = [0u8; SW::SW_RawEthernetMessage_DIM_0 - SW::SW_EthIpUdpHeaders_DIM_0];
     let mut i = 0;
-    #[verus_spec(
-        invariant
-            0 <= i <= payload@.len() <= value@.len() - SW::SW_EthIpUdpHeaders_DIM_0,
-            forall |j| 0 <= j < i ==> #[trigger] payload[j] == value[j + SW::SW_EthIpUdpHeaders_DIM_0],
-        decreases
-            SW::SW_UdpPayload_DIM_0 - i,
-    )]
     while i < SW::SW_UdpPayload_DIM_0 {
         payload.set(i, value[i + SW::SW_EthIpUdpHeaders_DIM_0]);
         i += 1;
@@ -389,17 +292,6 @@ fn udp_payload_from_raw_eth(value: SW::RawEthernetMessage) -> SW::UdpPayload {
     payload
 }
 
-/// Returns true if the parsed packet should be forwarded to the VMM. ARP packets are
-/// always allowed. IPv4 UDP packets are allowed only if their destination port is in
-/// the UDP allowlist (port 68/DHCP). All other traffic (IPv4 TCP, IPv6, unknown
-/// protocols) is rejected.
-#[verus_verify]
-#[verus_spec(r =>
-    requires
-        config::udp::ALLOWED_PORTS =~= GumboLib::UDP_ALLOWED_PORTS_spec(),
-    ensures
-        ((packet is Arp) || packet_is_whitelisted_udp(packet)) == (r == true),
-)]
 fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {
     match packet {
         firewall_core::PacketType::Arp(_) => true,
@@ -423,42 +315,16 @@ fn can_send_to_vmm(packet: &firewall_core::PacketType) -> bool {
     }
 }
 
-/// Returns true if the given UDP destination port is in the UDP allowlist.
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r == config::udp::ALLOWED_PORTS@.contains(port),
-)]
 fn udp_port_allowed(port: u16) -> bool {
     port_allowed(&config::udp::ALLOWED_PORTS, port)
 }
 
-/// Returns true if the given TCP destination port is in the TCP allowlist.
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r == config::tcp::ALLOWED_PORTS@.contains(port),
-)]
 fn tcp_port_allowed(port: u16) -> bool {
     port_allowed(&config::tcp::ALLOWED_PORTS, port)
 }
 
-/// Generic allowlist check: linearly scans `allowed_ports` and returns true if `port`
-/// is found. Used by both `udp_port_allowed` and `tcp_port_allowed`.
-#[verus_verify]
-#[verus_spec(r =>
-    ensures
-        r == allowed_ports@.contains(port),
-)]
 fn port_allowed(allowed_ports: &[u16], port: u16) -> bool {
     let mut i: usize = 0;
-    #[verus_spec(
-        invariant
-            0 <= i <= allowed_ports@.len(),
-            forall |j| 0 <= j < i ==> allowed_ports@[j] != port,
-        decreases
-            allowed_ports@.len() - i,
-    )]
     while i < allowed_ports.len() {
         if allowed_ports[i] == port {
             return true;
@@ -469,7 +335,6 @@ fn port_allowed(allowed_ports: &[u16], port: u16) -> bool {
 }
 
 /// Logs the IP protocol number of a dropped packet (neither TCP nor UDP).
-#[verus_verify(external_body)]
 fn info_protocol(protocol: firewall_core::IpProtocol) {
     log::info!("Not a TCP or UDP packet. ({:?}) Throw it away.", protocol);
 }

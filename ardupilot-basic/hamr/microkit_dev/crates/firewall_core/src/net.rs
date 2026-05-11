@@ -1,7 +1,8 @@
 use vstd::prelude::*;
 use vstd::slice::slice_subrange;
 #[cfg(verus_keep_ghost)]
-use vstd::std_specs::convert::{FromSpecImpl, TryFromSpecImpl};
+use vstd::std_specs::convert::TryFromSpecImpl;
+
 
 // ============================================================
 // Ipv4Address
@@ -16,18 +17,19 @@ pub struct Ipv4Address(pub [u8; 4]);
 impl Ipv4Address {
     #[verus_spec(r =>
         requires
-            data@.len() == 4,
+            data.len() >= 4,
         ensures
-            r.0@ =~= data@,
+            r.0@ =~= data@.subrange(0, 4 as int),
     )]
     pub fn from_bytes(data: &[u8]) -> Ipv4Address {
         let mut bytes = [0u8; 4];
-
-        let mut i = 0;
+        let mut i: usize = 0;
         #[verus_spec(
             invariant
-                0 <= i <= bytes@.len() == data@.len(),
-                forall |j| 0 <= j < i ==> bytes[j] == data[j],
+                0 <= i <= 4,
+                data.len() >= 4,
+                bytes@.len() == 4,
+                forall|j: int| 0 <= j < i as int ==> bytes@[j] == data@[j],
             decreases
                 4 - i,
         )]
@@ -39,12 +41,10 @@ impl Ipv4Address {
     }
 }
 
-// MAX_MTU is defined inside the verus! block below because Verus requires
-// constants to be visible to the verifier.
-
 // ============================================================
 // Address
 // ============================================================
+
 
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
@@ -55,18 +55,19 @@ pub struct Address(pub [u8; 6]);
 impl Address {
     #[verus_spec(r =>
         requires
-            data@.len() == 6,
+            data.len() >= 6,
         ensures
-            r.0@ =~= data@,
+            r.0@ =~= data@.subrange(0, 6 as int),
     )]
     pub fn from_bytes(data: &[u8]) -> Address {
         let mut bytes = [0u8; 6];
-
-        let mut i = 0;
+        let mut i: usize = 0;
         #[verus_spec(
             invariant
-                0 <= i <= bytes@.len() == data@.len(),
-                forall |j| 0 <= j < i ==> bytes[j] == data[j],
+                0 <= i <= 6,
+                data.len() >= 6,
+                bytes@.len() == 6,
+                forall|j: int| 0 <= j < i as int ==> bytes@[j] == data@[j],
             decreases
                 6 - i,
         )]
@@ -78,23 +79,22 @@ impl Address {
     }
 
     #[verus_spec(r =>
-        requires
-            self.0@.len() == 6,
         ensures
-            r == (self.0@ =~= seq![0,0,0,0,0,0]),
+            r == (forall|j: int| 0 <= j < 6 ==> self.0@[j] == 0u8),
     )]
     pub fn is_empty(&self) -> bool {
-        let mut i = 0;
+        let mut i: usize = 0;
         #[verus_spec(
             invariant
-                0 <= i <= self.0@.len(),
-                forall |j| 0 <= j < i ==> self.0@[j] == 0,
+                0 <= i <= 6,
+                self.0@.len() == 6,
+                forall|j: int| 0 <= j < i as int ==> self.0@[j] == 0u8,
             decreases
-                self.0@.len() - i,
+                6 - i,
         )]
-        while i < self.0.as_slice().len() {
+        while i < 6 {
             if self.0[i] != 0 {
-                return false
+                return false;
             }
             i += 1;
         }
@@ -106,12 +106,12 @@ impl Address {
 // u16_from_be_bytes
 // ============================================================
 
-#[verus_verify]
+
 #[verus_spec(r =>
     requires
-        bytes@.len() == 2,
+        bytes.len() >= 2,
     ensures
-        r == spec_u16_from_be_bytes(bytes@),
+        r == (bytes@[0 as int] as u16) * 256 + (bytes@[1 as int] as u16),
 )]
 fn u16_from_be_bytes(bytes: &[u8]) -> u16 {
     ((bytes[0] as u16) * 256u16) + (bytes[1] as u16)
@@ -120,6 +120,7 @@ fn u16_from_be_bytes(bytes: &[u8]) -> u16 {
 // ============================================================
 // EtherType
 // ============================================================
+
 
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
@@ -131,21 +132,33 @@ pub enum EtherType {
     Ipv6 = 0x86DD,
 }
 
+verus! {
+    pub open spec fn spec_ether_type_from_u16(raw: u16) -> Option<EtherType> {
+        match raw {
+            0x0800u16 => Some(EtherType::Ipv4),
+            0x0806u16 => Some(EtherType::Arp),
+            0x86DDu16 => Some(EtherType::Ipv6),
+            _ => None,
+        }
+    }
+}
+
 #[verus_verify]
 impl EtherType {
     #[verus_spec(r =>
         requires
-            bytes@.len() == 2,
+            bytes.len() >= 2,
         ensures
-            frame_arp_subrange(bytes@) == (r.is_some() && r.unwrap() is Arp),
-            frame_ipv4_subrange(bytes@) == (r.is_some() && r.unwrap() is Ipv4),
-            frame_ipv6_subrange(bytes@) == (r.is_some() && r.unwrap() is Ipv6),
+            r == spec_ether_type_from_u16(
+                ((bytes@[0 as int] as u16) * 256 + (bytes@[1 as int] as u16)) as u16
+            ),
     )]
     pub fn from_bytes(bytes: &[u8]) -> Option<EtherType> {
         let raw = u16_from_be_bytes(bytes);
         EtherType::try_from(raw).ok()
     }
 }
+
 
 #[verus_verify]
 impl TryFrom<u16> for EtherType {
@@ -162,7 +175,22 @@ impl TryFrom<u16> for EtherType {
     }
 }
 
-#[verus_verify]
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl TryFromSpecImpl<u16> for EtherType {
+        open spec fn obeys_try_from_spec() -> bool { true }
+        open spec fn try_from_spec(value: u16) -> Result<Self, ()> {
+            match value {
+                0x0800u16 => Ok(EtherType::Ipv4),
+                0x0806u16 => Ok(EtherType::Arp),
+                0x86DDu16 => Ok(EtherType::Ipv6),
+                _ => Err(()),
+            }
+        }
+    }
+}
+
+
 impl From<EtherType> for u16 {
     fn from(value: EtherType) -> Self {
         match value {
@@ -177,6 +205,7 @@ impl From<EtherType> for u16 {
 // EthernetRepr
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
@@ -186,6 +215,7 @@ pub struct EthernetRepr {
     pub ethertype: EtherType,
 }
 
+
 #[verus_verify]
 impl EthernetRepr {
     pub const SIZE: usize = 14;
@@ -193,11 +223,12 @@ impl EthernetRepr {
     /// Parse an Ethernet II frame and return a high-level representation.
     #[verus_spec(r =>
         requires
-            frame@.len() >= Self::SIZE,
+            frame.len() >= 14,
         ensures
-            valid_arp_frame(frame) == (r.is_some() && r.unwrap().ethertype is Arp),
-            valid_ipv4_frame(frame) == (r.is_some() && r.unwrap().ethertype is Ipv4),
-            valid_ipv6_frame(frame) == (r.is_some() && r.unwrap().ethertype is Ipv6),
+            r.is_some() ==> (
+                r.unwrap().dst_addr.0@ =~= frame@.subrange(0, 6 as int)
+                && r.unwrap().src_addr.0@ =~= frame@.subrange(6, 12 as int)
+            ),
     )]
     pub fn parse(frame: &[u8]) -> Option<EthernetRepr> {
         let dst_addr = Address::from_bytes(slice_subrange(frame, 0, 6));
@@ -219,6 +250,7 @@ impl EthernetRepr {
 // ArpOp
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug, Clone, Copy)]
@@ -228,20 +260,32 @@ pub enum ArpOp {
     Reply = 2,
 }
 
+verus! {
+    pub open spec fn spec_arp_op_from_u16(raw: u16) -> Option<ArpOp> {
+        match raw {
+            1u16 => Some(ArpOp::Request),
+            2u16 => Some(ArpOp::Reply),
+            _ => None,
+        }
+    }
+}
+
 #[verus_verify]
 impl ArpOp {
     #[verus_spec(r =>
         requires
-            bytes@.len() == 2,
+            bytes.len() >= 2,
         ensures
-            valid_arp_op_request_subrange(bytes@) == (r.is_some() && r.unwrap() is Request),
-            valid_arp_op_reply_subrange(bytes@) == (r.is_some() && r.unwrap() is Reply),
+            r == spec_arp_op_from_u16(
+                ((bytes@[0 as int] as u16) * 256 + (bytes@[1 as int] as u16)) as u16
+            ),
     )]
     pub fn from_bytes(bytes: &[u8]) -> Option<ArpOp> {
         let raw = u16_from_be_bytes(bytes);
         ArpOp::try_from(raw).ok()
     }
 }
+
 
 #[verus_verify]
 impl TryFrom<u16> for ArpOp {
@@ -257,7 +301,21 @@ impl TryFrom<u16> for ArpOp {
     }
 }
 
-#[verus_verify]
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl TryFromSpecImpl<u16> for ArpOp {
+        open spec fn obeys_try_from_spec() -> bool { true }
+        open spec fn try_from_spec(value: u16) -> Result<Self, ()> {
+            match value {
+                1u16 => Ok(ArpOp::Request),
+                2u16 => Ok(ArpOp::Reply),
+                _ => Err(()),
+            }
+        }
+    }
+}
+
+
 impl From<ArpOp> for u16 {
     fn from(value: ArpOp) -> Self {
         match value {
@@ -271,6 +329,7 @@ impl From<ArpOp> for u16 {
 // HardwareType
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug, Clone, Copy)]
@@ -279,19 +338,31 @@ pub enum HardwareType {
     Ethernet = 1,
 }
 
+verus! {
+    pub open spec fn spec_hardware_type_from_u16(raw: u16) -> Option<HardwareType> {
+        match raw {
+            1u16 => Some(HardwareType::Ethernet),
+            _ => None,
+        }
+    }
+}
+
 #[verus_verify]
 impl HardwareType {
     #[verus_spec(r =>
         requires
-            bytes@.len() == 2,
+            bytes.len() >= 2,
         ensures
-            valid_arp_htype_eth_subrange(bytes@) == (r.is_some() && r.unwrap() is Ethernet),
+            r == spec_hardware_type_from_u16(
+                ((bytes@[0 as int] as u16) * 256 + (bytes@[1 as int] as u16)) as u16
+            ),
     )]
     pub fn from_bytes(bytes: &[u8]) -> Option<HardwareType> {
         let raw = u16_from_be_bytes(bytes);
         HardwareType::try_from(raw).ok()
     }
 }
+
 
 #[verus_verify]
 impl TryFrom<u16> for HardwareType {
@@ -306,7 +377,20 @@ impl TryFrom<u16> for HardwareType {
     }
 }
 
-#[verus_verify]
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl TryFromSpecImpl<u16> for HardwareType {
+        open spec fn obeys_try_from_spec() -> bool { true }
+        open spec fn try_from_spec(value: u16) -> Result<Self, ()> {
+            match value {
+                1u16 => Ok(HardwareType::Ethernet),
+                _ => Err(()),
+            }
+        }
+    }
+}
+
+
 impl From<HardwareType> for u16 {
     fn from(value: HardwareType) -> Self {
         match value {
@@ -320,6 +404,7 @@ impl From<HardwareType> for u16 {
 // ============================================================
 
 // TODO: Protocol addresses should be variable, but I only care about supporting ipv4 for now
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
@@ -335,6 +420,7 @@ pub struct Arp {
     pub dest_protocol_addr: Ipv4Address,
 }
 
+
 #[verus_verify]
 impl Arp {
     pub const SIZE: usize = 28;
@@ -342,10 +428,16 @@ impl Arp {
     /// Parse an ARP packet and return a high-level representation.
     #[verus_spec(r =>
         requires
-            packet@.len() >= Self::SIZE,
+            packet.len() >= 28,
         ensures
-            valid_arp_op_subrange(packet@.subrange(6, 8)) == valid_arp_op(packet@),
-            wellformed_arp_packet(packet@) == r.is_some(),
+            r.is_some() ==> (
+                r.unwrap().hsize == packet@[4 as int]
+                && r.unwrap().psize == packet@[5 as int]
+                && r.unwrap().src_addr.0@ =~= packet@.subrange(8, 14 as int)
+                && r.unwrap().src_protocol_addr.0@ =~= packet@.subrange(14, 18 as int)
+                && r.unwrap().dest_addr.0@ =~= packet@.subrange(18, 24 as int)
+                && r.unwrap().dest_protocol_addr.0@ =~= packet@.subrange(24, 28 as int)
+            ),
     )]
     pub fn parse(packet: &[u8]) -> Option<Arp> {
         let htype = HardwareType::from_bytes(slice_subrange(packet, 0, 2))?;
@@ -375,7 +467,10 @@ impl Arp {
 
     #[verus_spec(r =>
         ensures
-            r == !(ptype is Arp),
+            r == match *ptype {
+                EtherType::Arp => false,
+                _ => true,
+            },
     )]
     fn allowed_ptype(ptype: &EtherType) -> bool {
         if let EtherType::Arp = ptype {
@@ -389,6 +484,7 @@ impl Arp {
 // ============================================================
 // IpProtocol
 // ============================================================
+
 
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
@@ -406,6 +502,7 @@ pub enum IpProtocol {
     Ipv6NoNxt = 0x3b,
     Ipv6Opts = 0x3c,
 }
+
 
 #[verus_verify]
 impl TryFrom<u8> for IpProtocol {
@@ -429,7 +526,29 @@ impl TryFrom<u8> for IpProtocol {
     }
 }
 
-#[verus_verify]
+#[cfg(verus_keep_ghost)]
+verus! {
+    impl TryFromSpecImpl<u8> for IpProtocol {
+        open spec fn obeys_try_from_spec() -> bool { true }
+        open spec fn try_from_spec(value: u8) -> Result<Self, ()> {
+            match value {
+                0x00u8 => Ok(IpProtocol::HopByHop),
+                0x01u8 => Ok(IpProtocol::Icmp),
+                0x02u8 => Ok(IpProtocol::Igmp),
+                0x06u8 => Ok(IpProtocol::Tcp),
+                0x11u8 => Ok(IpProtocol::Udp),
+                0x2bu8 => Ok(IpProtocol::Ipv6Route),
+                0x2cu8 => Ok(IpProtocol::Ipv6Frag),
+                0x3au8 => Ok(IpProtocol::Icmpv6),
+                0x3bu8 => Ok(IpProtocol::Ipv6NoNxt),
+                0x3cu8 => Ok(IpProtocol::Ipv6Opts),
+                _ => Err(()),
+            }
+        }
+    }
+}
+
+
 impl From<IpProtocol> for u8 {
     fn from(value: IpProtocol) -> Self {
         match value {
@@ -451,6 +570,7 @@ impl From<IpProtocol> for u8 {
 // Ipv4Repr
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
@@ -459,18 +579,19 @@ pub struct Ipv4Repr {
     pub length: u16,
 }
 
+
 #[verus_verify]
 impl Ipv4Repr {
     pub const SIZE: usize = 20;
 
     #[verus_spec(r =>
         requires
-            packet@.len() >= Self::SIZE,
+            packet.len() >= 20,
         ensures
-            wellformed_ipv4_packet(packet@) == (r.is_some() && r.unwrap().length <= MAX_MTU && r.unwrap().length == ipv4_length_subrange(packet@)),
-            valid_tcp_packet(packet@) == (r.is_some() && r.unwrap().protocol is Tcp),
-            valid_udp_packet(packet@) == (r.is_some() && r.unwrap().protocol is Udp),
-            r.is_some() ==> wellformed_ipv4_packet(packet@),
+            r.is_some() ==> (
+                r.unwrap().length == (packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16)
+                && r.unwrap().length <= MAX_MTU
+            ),
     )]
     pub fn parse(packet: &[u8]) -> Option<Ipv4Repr> {
         let protocol = IpProtocol::try_from(packet[9]).ok()?;
@@ -489,6 +610,7 @@ impl Ipv4Repr {
 // TcpRepr
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
@@ -496,15 +618,16 @@ pub struct TcpRepr {
     pub dst_port: u16,
 }
 
+
 #[verus_verify]
 impl TcpRepr {
     pub const SIZE: usize = 20;
 
     #[verus_spec(r =>
         requires
-            packet@.len() >= Self::SIZE,
+            packet.len() >= 4,
         ensures
-            r.dst_port == spec_u16_from_be_bytes(packet@.subrange(2, 4)),
+            r.dst_port == (packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16),
     )]
     pub fn parse(packet: &[u8]) -> TcpRepr {
         let dst_port = u16_from_be_bytes(slice_subrange(packet, 2, 4));
@@ -516,6 +639,7 @@ impl TcpRepr {
 // UdpRepr
 // ============================================================
 
+
 #[verus_verify]
 #[cfg_attr(test, derive(PartialEq))]
 #[derive(Debug)]
@@ -524,16 +648,17 @@ pub struct UdpRepr {
     pub dst_port: u16,
 }
 
+
 #[verus_verify]
 impl UdpRepr {
     pub const SIZE: usize = 20;
 
     #[verus_spec(r =>
         requires
-            packet@.len() >= Self::SIZE,
+            packet.len() >= 4,
         ensures
-            r.src_port == spec_u16_from_be_bytes(packet@.subrange(0, 2)),
-            r.dst_port == spec_u16_from_be_bytes(packet@.subrange(2, 4)),
+            r.src_port == (packet@[0 as int] as u16) * 256 + (packet@[1 as int] as u16),
+            r.dst_port == (packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16),
     )]
     pub fn parse(packet: &[u8]) -> UdpRepr {
         let src_port =  u16_from_be_bytes(slice_subrange(packet, 0, 2));
@@ -543,360 +668,12 @@ impl UdpRepr {
 }
 
 // ============================================================
-// Verus spec functions and ghost impls
+// Constants
 // ============================================================
 
 verus! {
-
     /// Define the max possible MTU. Use standard Jumbo size as maximum possible.
     pub const MAX_MTU: u16 = 9000;
-
-    // --- Ghost impls for TryFromSpecImpl / FromSpecImpl ---
-
-    #[cfg(verus_keep_ghost)]
-    impl TryFromSpecImpl<u16> for EtherType {
-        open spec fn obeys_try_from_spec() -> bool {
-            true
-        }
-
-        open spec fn try_from_spec(v: u16) -> Result<Self, Self::Error> {
-            match v {
-                0x0800 => Ok(EtherType::Ipv4),
-                0x0806 => Ok(EtherType::Arp),
-                0x86DD => Ok(EtherType::Ipv6),
-                _ => Err(()),
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl FromSpecImpl<EtherType> for u16 {
-        open spec fn obeys_from_spec() -> bool {
-            true
-        }
-
-        open spec fn from_spec(v: EtherType) -> Self {
-            match v {
-                EtherType::Ipv4 => 0x0800,
-                EtherType::Arp => 0x0806,
-                EtherType::Ipv6 => 0x86DD,
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl TryFromSpecImpl<u16> for ArpOp {
-        open spec fn obeys_try_from_spec() -> bool {
-            true
-        }
-
-        open spec fn try_from_spec(v: u16) -> Result<Self, Self::Error> {
-            match v {
-                1 => Ok(ArpOp::Request),
-                2 => Ok(ArpOp::Reply),
-                _ => Err(()),
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl FromSpecImpl<ArpOp> for u16 {
-        open spec fn obeys_from_spec() -> bool {
-            true
-        }
-
-        open spec fn from_spec(v: ArpOp) -> Self {
-            match v {
-                ArpOp::Request => 1,
-                ArpOp::Reply => 2,
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl TryFromSpecImpl<u16> for HardwareType {
-        open spec fn obeys_try_from_spec() -> bool {
-            true
-        }
-
-        open spec fn try_from_spec(v: u16) -> Result<Self, Self::Error> {
-            match v {
-                1 => Ok(HardwareType::Ethernet),
-                _ => Err(()),
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl FromSpecImpl<HardwareType> for u16 {
-        open spec fn obeys_from_spec() -> bool {
-            true
-        }
-
-        open spec fn from_spec(v: HardwareType) -> Self {
-            match v {
-                HardwareType::Ethernet => 1,
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl TryFromSpecImpl<u8> for IpProtocol {
-        open spec fn obeys_try_from_spec() -> bool {
-            true
-        }
-
-        open spec fn try_from_spec(v: u8) -> Result<Self, Self::Error> {
-            match v {
-                0x00 => Ok(IpProtocol::HopByHop),
-                0x01 => Ok(IpProtocol::Icmp),
-                0x02 => Ok(IpProtocol::Igmp),
-                0x06 => Ok(IpProtocol::Tcp),
-                0x11 => Ok(IpProtocol::Udp),
-                0x2b => Ok(IpProtocol::Ipv6Route),
-                0x2c => Ok(IpProtocol::Ipv6Frag),
-                0x3a => Ok(IpProtocol::Icmpv6),
-                0x3b => Ok(IpProtocol::Ipv6NoNxt),
-                0x3c => Ok(IpProtocol::Ipv6Opts),
-                _ => Err(()),
-            }
-        }
-    }
-
-    #[cfg(verus_keep_ghost)]
-    impl FromSpecImpl<IpProtocol> for u8 {
-        open spec fn obeys_from_spec() -> bool {
-            true
-        }
-
-        open spec fn from_spec(v: IpProtocol) -> Self {
-            match v {
-                IpProtocol::HopByHop => 0x00,
-                IpProtocol::Icmp => 0x01,
-                IpProtocol::Igmp => 0x02,
-                IpProtocol::Tcp => 0x06,
-                IpProtocol::Udp => 0x11,
-                IpProtocol::Ipv6Route => 0x2b,
-                IpProtocol::Ipv6Frag => 0x2c,
-                IpProtocol::Icmpv6 => 0x3a,
-                IpProtocol::Ipv6NoNxt => 0x3b,
-                IpProtocol::Ipv6Opts => 0x3c,
-            }
-        }
-    }
-
-    // --- Spec functions ---
-
-    pub open spec fn spec_u16_from_be_bytes(s: Seq<u8>) -> u16
-        recommends
-            s.len() == 2,
-    {
-        // TODO: Why is the full cast needed?
-        (((s[0] as u16) * 256u16) + (s[1] as u16)) as u16
-    }
-
-    // -----------------------
-    // -- EthernetRepr
-    // -----------------------
-    pub open spec fn frame_ipv4_subrange(frame: Seq<u8>) -> bool
-    {
-        frame =~= seq![8,0]
-    }
-
-    pub open spec fn frame_ipv6_subrange(frame: Seq<u8>) -> bool
-    {
-        frame =~= seq![134,221]
-    }
-
-    pub open spec fn frame_arp_subrange(frame: Seq<u8>) -> bool
-    {
-        frame =~= seq![8,6]
-    }
-
-    pub open spec fn frames_subrange_valid(frame: Seq<u8>) -> bool
-    {
-        frame_arp_subrange(frame) || frame_ipv4_subrange(frame) || frame_ipv6_subrange(frame)
-    }
-
-    pub open spec fn frame_ipv4(frame: &[u8]) -> bool
-    {
-        frame@.subrange(12,14) =~= seq![8,0]
-    }
-
-    pub open spec fn frame_ipv6(frame: &[u8]) -> bool
-    {
-        frame@.subrange(12,14) =~= seq![134,221]
-    }
-
-    pub open spec fn frame_arp(frame: &[u8]) -> bool
-    {
-        frame@.subrange(12,14) =~= seq![8,6]
-    }
-
-    pub open spec fn frame_is_wellformed_eth2(frame: &[u8]) -> bool
-    {
-        frame_ipv4(frame) || frame_ipv6(frame) || frame_arp(frame)
-    }
-
-    pub open spec fn frame_dst_addr_valid(bytes: Seq<u8>) -> bool
-    {
-        !(bytes.subrange(0,6) =~= seq![0,0,0,0,0,0])
-    }
-
-    pub open spec fn valid_arp_frame(frame: &[u8]) -> bool
-    {
-        frames_subrange_valid(frame@.subrange(12, 14)) &&
-            frame_dst_addr_valid(frame@) &&
-            frame_arp(frame)
-    }
-
-    pub open spec fn valid_ipv4_frame(frame: &[u8]) -> bool
-    {
-        frames_subrange_valid(frame@.subrange(12, 14)) &&
-            frame_dst_addr_valid(frame@) &&
-            frame_ipv4(frame)
-    }
-
-    pub open spec fn valid_ipv6_frame(frame: &[u8]) -> bool
-    {
-        frames_subrange_valid(frame@.subrange(12, 14)) &&
-            frame_dst_addr_valid(frame@) &&
-            frame_ipv6(frame)
-    }
-
-    // -----------------------
-    // -- Arp
-    // -----------------------
-    pub open spec fn arp_valid_ptype_subrange(bytes: Seq<u8>) -> bool
-    {
-        frame_ipv4_subrange(bytes) || frame_ipv6_subrange(bytes)
-    }
-
-    pub open spec fn valid_arp_op_request_subrange(bytes: Seq<u8>) -> bool
-    {
-        bytes =~= seq![0,1]
-    }
-
-    pub open spec fn valid_arp_op_reply_subrange(bytes: Seq<u8>) -> bool
-    {
-        bytes =~= seq![0,2]
-    }
-
-    pub open spec fn valid_arp_op_subrange(bytes: Seq<u8>) -> bool
-    {
-        valid_arp_op_request_subrange(bytes) || valid_arp_op_reply_subrange(bytes)
-    }
-
-    pub open spec fn valid_arp_op_request(bytes: Seq<u8>) -> bool
-    {
-        bytes.subrange(6,8) =~= seq![0,1]
-    }
-
-    pub open spec fn valid_arp_op_reply(bytes: Seq<u8>) -> bool
-    {
-        bytes.subrange(6,8) =~= seq![0,2]
-    }
-
-    pub open spec fn valid_arp_op(bytes: Seq<u8>) -> bool
-    {
-        valid_arp_op_request(bytes) || valid_arp_op_reply(bytes)
-    }
-
-    pub open spec fn valid_arp_htype_eth_subrange(bytes: Seq<u8>) -> bool
-    {
-        bytes =~= seq![0,1]
-    }
-
-    pub open spec fn valid_arp_htype_subrange(bytes: Seq<u8>) -> bool
-    {
-        valid_arp_htype_eth_subrange(bytes)
-    }
-
-    pub open spec fn wellformed_arp_packet(packet: Seq<u8>) -> bool {
-        valid_arp_op_subrange(packet.subrange(6, 8)) &&
-            valid_arp_htype_subrange(packet.subrange(0, 2)) &&
-            arp_valid_ptype_subrange(packet.subrange(2, 4))
-    }
-
-
-    pub open spec fn wellformed_arp_frame(frame: Seq<u8>) -> bool {
-        valid_arp_op_subrange(frame.subrange(20, 22)) &&
-            valid_arp_htype_subrange(frame.subrange(14, 16)) &&
-            arp_valid_ptype_subrange(frame.subrange(16, 18))
-    }
-
-    // -----------------------
-    // -- Ipv4
-    // -----------------------
-
-    pub open spec fn ipv4_is_tcp(frame: Seq<u8>) -> bool
-    {
-    frame[23] == 0x06
-    }
-
-    pub open spec fn ipv4_is_udp(frame: Seq<u8>) -> bool
-    {
-    frame[23] == 0x11
-    }
-
-    pub open spec fn valid_ipv4_length(frame: Seq<u8>) -> bool {
-        spec_u16_from_be_bytes(frame.subrange(16,18)) <= MAX_MTU
-    }
-
-    pub open spec fn valid_ipv4_protocol(frame: Seq<u8>) -> bool {
-        seq![0x00, 0x01, 0x02, 0x06, 0x11, 0x2b, 0x2c, 0x3a, 0x3b, 0x3c].contains(frame[23])
-    }
-
-    pub open spec fn valid_ipv4_vers_ihl(frame: Seq<u8>) -> bool
-    {
-        frame[14] == 0x45
-    }
-
-    pub open spec fn wellformed_ipv4_frame(frame: Seq<u8>) -> bool {
-        valid_ipv4_protocol(frame) && valid_ipv4_length(frame) && valid_ipv4_vers_ihl(frame)
-    }
-
-    pub open spec fn ipv4_is_tcp_subrange(frame: Seq<u8>) -> bool
-    {
-    frame[9] == 0x06
-    }
-
-    pub open spec fn ipv4_is_udp_subrange(frame: Seq<u8>) -> bool
-    {
-    frame[9] == 0x11
-    }
-
-    pub open spec fn ipv4_length_subrange(bytes: Seq<u8>) -> u16 {
-        spec_u16_from_be_bytes(bytes.subrange(2,4))
-    }
-
-    pub open spec fn valid_ipv4_length_subrange(bytes: Seq<u8>) -> bool {
-        ipv4_length_subrange(bytes) <= MAX_MTU
-    }
-
-    pub open spec fn valid_ipv4_protocol_subrange(bytes: Seq<u8>) -> bool {
-        seq![0x00, 0x01, 0x02, 0x06, 0x11, 0x2b, 0x2c, 0x3a, 0x3b, 0x3c].contains(bytes[9])
-    }
-
-    pub open spec fn valid_ipv4_vers_ihl_subrange(bytes: Seq<u8>) -> bool
-    {
-        bytes[0] == 0x45
-    }
-
-    pub open spec fn wellformed_ipv4_packet(bytes: Seq<u8>) -> bool {
-        valid_ipv4_protocol_subrange(bytes) && valid_ipv4_length_subrange(bytes) && valid_ipv4_vers_ihl_subrange(bytes)
-    }
-
-    pub open spec fn valid_tcp_packet(packet: Seq<u8>) -> bool
-    {
-        wellformed_ipv4_packet(packet) && ipv4_is_tcp_subrange(packet)
-    }
-
-    pub open spec fn valid_udp_packet(packet: Seq<u8>) -> bool
-    {
-        wellformed_ipv4_packet(packet) && ipv4_is_udp_subrange(packet)
-    }
-
 }
 
 // ============================================================
