@@ -228,21 +228,31 @@ impl EthernetRepr {
             r.is_some() ==> (
                 r.unwrap().dst_addr.0@ =~= frame@.subrange(0, 6 as int)
                 && r.unwrap().src_addr.0@ =~= frame@.subrange(6, 12 as int)
+                && spec_ether_type_from_u16(
+                    ((frame@[12 as int] as u16) * 256 + (frame@[13 as int] as u16)) as u16
+                ) == Some(r.unwrap().ethertype)
             ),
+            // Forward completeness: valid conditions imply parse succeeds
+            !(frame@[0 as int] == 0u8 && frame@[1 as int] == 0u8 && frame@[2 as int] == 0u8
+              && frame@[3 as int] == 0u8 && frame@[4 as int] == 0u8 && frame@[5 as int] == 0u8)
+            && spec_ether_type_from_u16(
+                ((frame@[12 as int] as u16) * 256 + (frame@[13 as int] as u16)) as u16
+            ).is_some()
+            ==> r.is_some(),
+            // Reverse: parse success implies dst not all zeros
+            r.is_some() ==> !(frame@[0 as int] == 0u8 && frame@[1 as int] == 0u8
+                && frame@[2 as int] == 0u8 && frame@[3 as int] == 0u8
+                && frame@[4 as int] == 0u8 && frame@[5 as int] == 0u8),
     )]
     pub fn parse(frame: &[u8]) -> Option<EthernetRepr> {
-        let dst_addr = Address::from_bytes(slice_subrange(frame, 0, 6));
-        if dst_addr.is_empty() {
+        if frame[0] == 0 && frame[1] == 0 && frame[2] == 0
+            && frame[3] == 0 && frame[4] == 0 && frame[5] == 0 {
             return None;
         }
+        let dst_addr = Address::from_bytes(slice_subrange(frame, 0, 6));
         let src_addr = Address::from_bytes(slice_subrange(frame, 6, 12));
-        let ethertype = EtherType::from_bytes(slice_subrange(frame,12,14))?;
-
-        Some(EthernetRepr {
-            src_addr,
-            dst_addr,
-            ethertype,
-        })
+        let ethertype = EtherType::from_bytes(slice_subrange(frame, 12, 14))?;
+        Some(EthernetRepr { src_addr, dst_addr, ethertype })
     }
 }
 
@@ -437,6 +447,43 @@ impl Arp {
                 && r.unwrap().src_protocol_addr.0@ =~= packet@.subrange(14, 18 as int)
                 && r.unwrap().dest_addr.0@ =~= packet@.subrange(18, 24 as int)
                 && r.unwrap().dest_protocol_addr.0@ =~= packet@.subrange(24, 28 as int)
+                && spec_hardware_type_from_u16(
+                    ((packet@[0 as int] as u16) * 256 + (packet@[1 as int] as u16)) as u16
+                ) == Some(r.unwrap().htype)
+                && spec_ether_type_from_u16(
+                    ((packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16)) as u16
+                ) == Some(r.unwrap().ptype)
+                && spec_arp_op_from_u16(
+                    ((packet@[6 as int] as u16) * 256 + (packet@[7 as int] as u16)) as u16
+                ) == Some(r.unwrap().op)
+            ),
+            // Completeness
+            spec_hardware_type_from_u16(
+                ((packet@[0 as int] as u16) * 256 + (packet@[1 as int] as u16)) as u16
+            ).is_some()
+            && spec_ether_type_from_u16(
+                ((packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16)) as u16
+            ).is_some()
+            && spec_ether_type_from_u16(
+                ((packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16)) as u16
+            ) != Some(EtherType::Arp)
+            && spec_arp_op_from_u16(
+                ((packet@[6 as int] as u16) * 256 + (packet@[7 as int] as u16)) as u16
+            ).is_some()
+            ==> r.is_some(),
+            // Reverse: htype bytes
+            r.is_some() ==> (
+                packet@[0 as int] == 0u8 && packet@[1 as int] == 1u8
+            ),
+            // Reverse: ptype bytes (Ipv4 or Ipv6, not Arp)
+            r.is_some() ==> (
+                (packet@[2 as int] == 8u8 && packet@[3 as int] == 0u8)
+                || (packet@[2 as int] == 134u8 && packet@[3 as int] == 221u8)
+            ),
+            // Reverse: op bytes
+            r.is_some() ==> (
+                packet@[6 as int] == 0u8
+                && (packet@[7 as int] == 1u8 || packet@[7 as int] == 2u8)
             ),
     )]
     pub fn parse(packet: &[u8]) -> Option<Arp> {
@@ -503,6 +550,24 @@ pub enum IpProtocol {
     Ipv6Opts = 0x3c,
 }
 
+
+verus! {
+    pub open spec fn spec_ip_protocol_from_u8(raw: u8) -> Option<IpProtocol> {
+        match raw {
+            0x00u8 => Some(IpProtocol::HopByHop),
+            0x01u8 => Some(IpProtocol::Icmp),
+            0x02u8 => Some(IpProtocol::Igmp),
+            0x06u8 => Some(IpProtocol::Tcp),
+            0x11u8 => Some(IpProtocol::Udp),
+            0x2bu8 => Some(IpProtocol::Ipv6Route),
+            0x2cu8 => Some(IpProtocol::Ipv6Frag),
+            0x3au8 => Some(IpProtocol::Icmpv6),
+            0x3bu8 => Some(IpProtocol::Ipv6NoNxt),
+            0x3cu8 => Some(IpProtocol::Ipv6Opts),
+            _ => None,
+        }
+    }
+}
 
 #[verus_verify]
 impl TryFrom<u8> for IpProtocol {
@@ -591,7 +656,14 @@ impl Ipv4Repr {
             r.is_some() ==> (
                 r.unwrap().length == (packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16)
                 && r.unwrap().length <= MAX_MTU
+                && spec_ip_protocol_from_u8(packet@[9 as int]) == Some(r.unwrap().protocol)
+                && packet@[0 as int] == 69u8
             ),
+            // Completeness
+            packet@[0 as int] == 69u8
+            && spec_ip_protocol_from_u8(packet@[9 as int]).is_some()
+            && (packet@[2 as int] as u16) * 256 + (packet@[3 as int] as u16) <= MAX_MTU
+            ==> r.is_some(),
     )]
     pub fn parse(packet: &[u8]) -> Option<Ipv4Repr> {
         let protocol = IpProtocol::try_from(packet[9]).ok()?;

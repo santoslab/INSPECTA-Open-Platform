@@ -8,6 +8,8 @@ use vstd::slice::slice_subrange;
 mod net;
 pub use net::{Address, ArpOp, HardwareType, Ipv4Address};
 pub use net::{Arp, EtherType, EthernetRepr, IpProtocol, Ipv4Repr, TcpRepr, UdpRepr};
+#[cfg(verus_keep_ghost)]
+pub use net::{spec_ether_type_from_u16, spec_arp_op_from_u16, spec_hardware_type_from_u16, spec_ip_protocol_from_u8};
 
 
 #[verus_verify]
@@ -56,6 +58,50 @@ verus! {
     pub const IPV4_TOTAL: usize = 34;
     pub const TCP_TOTAL: usize = 54;
     pub const UDP_TOTAL: usize = 54;
+
+    pub open spec fn is_arp_packet(pkt: PacketType) -> bool {
+        match pkt {
+            PacketType::Arp(_) => true,
+            _ => false,
+        }
+    }
+
+    pub open spec fn is_ipv4_packet(pkt: PacketType) -> bool {
+        match pkt {
+            PacketType::Ipv4(_) => true,
+            _ => false,
+        }
+    }
+
+    pub open spec fn is_ipv4_udp_packet(pkt: PacketType) -> bool {
+        match pkt {
+            PacketType::Ipv4(ip) => match ip.protocol {
+                Ipv4ProtoPacket::Udp(_) => true,
+                _ => false,
+            },
+            _ => false,
+        }
+    }
+
+    pub open spec fn get_udp_src_port(pkt: PacketType) -> u16 {
+        match pkt {
+            PacketType::Ipv4(ip) => match ip.protocol {
+                Ipv4ProtoPacket::Udp(udp) => udp.src_port,
+                _ => 0u16,
+            },
+            _ => 0u16,
+        }
+    }
+
+    pub open spec fn get_udp_dst_port(pkt: PacketType) -> u16 {
+        match pkt {
+            PacketType::Ipv4(ip) => match ip.protocol {
+                Ipv4ProtoPacket::Udp(udp) => udp.dst_port,
+                _ => 0u16,
+            },
+            _ => 0u16,
+        }
+    }
 }
 
 
@@ -68,6 +114,107 @@ impl EthFrame {
             r.is_some() ==> (
                 r.unwrap().header.dst_addr.0@ =~= frame@.subrange(0, 6 as int)
                 && r.unwrap().header.src_addr.0@ =~= frame@.subrange(6, 12 as int)
+                && spec_ether_type_from_u16(
+                    ((frame@[12 as int] as u16) * 256 + (frame@[13 as int] as u16)) as u16
+                ) == Some(r.unwrap().header.ethertype)
+            ),
+            // Variant correspondence: ethertype determines PacketType variant
+            r.is_some() && r.unwrap().header.ethertype == EtherType::Arp
+                ==> is_arp_packet(r.unwrap().eth_type),
+            r.is_some() && r.unwrap().header.ethertype == EtherType::Ipv4
+                ==> is_ipv4_packet(r.unwrap().eth_type),
+            r.is_some() && r.unwrap().header.ethertype == EtherType::Ipv6
+                ==> r.unwrap().eth_type == PacketType::Ipv6,
+            // UDP port correspondence: parsed ports match byte positions
+            r.is_some() && is_ipv4_udp_packet(r.unwrap().eth_type) ==> (
+                get_udp_src_port(r.unwrap().eth_type)
+                    == (frame@[34 as int] as u16) * 256 + (frame@[35 as int] as u16)
+                && get_udp_dst_port(r.unwrap().eth_type)
+                    == (frame@[36 as int] as u16) * 256 + (frame@[37 as int] as u16)
+            ),
+            // IPv4 protocol byte correspondence
+            r.is_some() && is_ipv4_packet(r.unwrap().eth_type) ==> (
+                spec_ip_protocol_from_u8(frame@[23 as int]).is_some()
+                && frame@[14 as int] == 69u8
+            ),
+            // ARP completeness
+            (
+                !(frame@[0 as int] == 0u8 && frame@[1 as int] == 0u8 && frame@[2 as int] == 0u8
+                  && frame@[3 as int] == 0u8 && frame@[4 as int] == 0u8 && frame@[5 as int] == 0u8)
+                && spec_ether_type_from_u16(
+                    ((frame@[12 as int] as u16) * 256 + (frame@[13 as int] as u16)) as u16
+                ) == Some(EtherType::Arp)
+                && spec_hardware_type_from_u16(
+                    ((frame@[14 as int] as u16) * 256 + (frame@[15 as int] as u16)) as u16
+                ).is_some()
+                && spec_ether_type_from_u16(
+                    ((frame@[16 as int] as u16) * 256 + (frame@[17 as int] as u16)) as u16
+                ).is_some()
+                && spec_ether_type_from_u16(
+                    ((frame@[16 as int] as u16) * 256 + (frame@[17 as int] as u16)) as u16
+                ) != Some(EtherType::Arp)
+                && spec_arp_op_from_u16(
+                    ((frame@[20 as int] as u16) * 256 + (frame@[21 as int] as u16)) as u16
+                ).is_some()
+            ) ==> r.is_some() && is_arp_packet(r.unwrap().eth_type),
+            // IPv4 UDP completeness
+            (
+                !(frame@[0 as int] == 0u8 && frame@[1 as int] == 0u8 && frame@[2 as int] == 0u8
+                  && frame@[3 as int] == 0u8 && frame@[4 as int] == 0u8 && frame@[5 as int] == 0u8)
+                && spec_ether_type_from_u16(
+                    ((frame@[12 as int] as u16) * 256 + (frame@[13 as int] as u16)) as u16
+                ) == Some(EtherType::Ipv4)
+                && frame@[14 as int] == 69u8
+                && spec_ip_protocol_from_u8(frame@[23 as int]) == Some(IpProtocol::Udp)
+                && (frame@[16 as int] as u16) * 256 + (frame@[17 as int] as u16) <= 9000u16
+            ) ==> r.is_some() && is_ipv4_udp_packet(r.unwrap().eth_type),
+            // Reverse: parse success implies dst addr not all zeros
+            r.is_some() ==> !(frame@[0 as int] == 0u8 && frame@[1 as int] == 0u8
+                && frame@[2 as int] == 0u8 && frame@[3 as int] == 0u8
+                && frame@[4 as int] == 0u8 && frame@[5 as int] == 0u8),
+            // Reverse: ARP ethertype bytes
+            r.is_some() && is_arp_packet(r.unwrap().eth_type) ==> (
+                frame@[12 as int] == 8u8 && frame@[13 as int] == 6u8
+            ),
+            // Reverse: ARP htype bytes (HardwareType::Ethernet = 0x0001)
+            r.is_some() && is_arp_packet(r.unwrap().eth_type) ==> (
+                frame@[14 as int] == 0u8 && frame@[15 as int] == 1u8
+            ),
+            // Reverse: ARP ptype bytes (Ipv4=0x0800 or Ipv6=0x86DD)
+            r.is_some() && is_arp_packet(r.unwrap().eth_type) ==> (
+                (frame@[16 as int] == 8u8 && frame@[17 as int] == 0u8)
+                || (frame@[16 as int] == 134u8 && frame@[17 as int] == 221u8)
+            ),
+            // Reverse: ARP op bytes (Request=0x0001 or Reply=0x0002)
+            r.is_some() && is_arp_packet(r.unwrap().eth_type) ==> (
+                frame@[20 as int] == 0u8
+                && (frame@[21 as int] == 1u8 || frame@[21 as int] == 2u8)
+            ),
+            // Reverse: ARP ptype bytes (Ipv4=0x0800 or Ipv6=0x86DD)
+            r.is_some() && is_arp_packet(r.unwrap().eth_type) ==> (
+                (frame@[16 as int] == 8u8 && frame@[17 as int] == 0u8)
+                || (frame@[16 as int] == 134u8 && frame@[17 as int] == 221u8)
+            ),
+            // Reverse: IPv4 ethertype bytes
+            r.is_some() && is_ipv4_packet(r.unwrap().eth_type) ==> (
+                frame@[12 as int] == 8u8 && frame@[13 as int] == 0u8
+            ),
+            // Reverse: IPv4 vers_ihl and length in range
+            r.is_some() && is_ipv4_packet(r.unwrap().eth_type) ==> (
+                frame@[14 as int] == 69u8
+                && (frame@[16 as int] as u16) * 256 + (frame@[17 as int] as u16) <= 9000u16
+            ),
+            // Reverse: IPv4 UDP protocol byte
+            r.is_some() && is_ipv4_udp_packet(r.unwrap().eth_type) ==> (
+                frame@[23 as int] == 17u8
+            ),
+            // Reverse: IPv4 protocol byte is valid
+            r.is_some() && is_ipv4_packet(r.unwrap().eth_type) ==> (
+                frame@[23 as int] == 0u8 || frame@[23 as int] == 1u8
+                || frame@[23 as int] == 2u8 || frame@[23 as int] == 6u8
+                || frame@[23 as int] == 17u8 || frame@[23 as int] == 43u8
+                || frame@[23 as int] == 44u8 || frame@[23 as int] == 58u8
+                || frame@[23 as int] == 59u8 || frame@[23 as int] == 60u8
             ),
     )]
     pub fn parse(frame: &[u8]) -> Option<EthFrame> {
