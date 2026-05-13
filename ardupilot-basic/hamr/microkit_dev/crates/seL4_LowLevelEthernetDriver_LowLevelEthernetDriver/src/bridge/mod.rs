@@ -2,4 +2,3 @@
 
 pub mod extern_c_api;
 pub mod seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_api;
-pub mod seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_GUMBOX;

@@ -1,5 +1,7 @@
-//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir hamr/microkit_dev
-//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir hamr/microkit_initial
+// @ HAMR: --platform Microkit --sel4-output-dir ../hamr/microkit
+
+//@ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir ../hamr/microkit_dev
+// @ HAMR: --platform Microkit --verus-attribute-syntax --sel4-output-dir ../hamr/microkit_initial
 package Platform {
 	private import HAMR::*;
 	private import SW::*;

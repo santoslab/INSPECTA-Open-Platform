@@ -41,7 +41,7 @@ val sel4_output_dir =
   if (platform == "Microkit") "microkit"
   else "sysml"
 
-val hamrDir = sysmlDir / "hamr"
+val hamrDir = sysmlDir.up / "hamr"
 
 var sourcePath: String = sysmlDir.string
 if (Os.envs.contains("SYSML_AADL_LIBRARIES")) {
@@ -64,14 +64,6 @@ var codegenArgs = ISZ(
   "--sourcepath", sourcePath,
   "--system-name", "Platform::ZCU102_Impl",
 )
-
-if (platform == "JVM") {
-  codegenArgs = codegenArgs :+ "--runtime-monitoring"
-} else {
-  println("***********************************************************************")
-  println(s"Note: runtime-monitoring support is not yet available for ${platform} ")
-  println("***********************************************************************")
-}
 
 if (excludeComponentImpl) {
   codegenArgs = codegenArgs :+ "--exclude-component-impl"

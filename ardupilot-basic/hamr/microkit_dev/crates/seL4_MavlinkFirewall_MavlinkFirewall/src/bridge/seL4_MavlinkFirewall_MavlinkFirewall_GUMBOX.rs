@@ -44,7 +44,7 @@ pub fn msg_is_blacklisted(msg: SW::UdpPayload) -> bool
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_In0 incoming event data port
   * @param api_Out0 outgoing event data port
   */
@@ -61,7 +61,7 @@ pub fn compute_spec_hlr_19_mav0_drop_mav_cmd_flash_bootloader_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_20_mav0_drop_malformed_msg
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In0 incoming event data port
   * @param api_Out0 outgoing event data port
   */
@@ -77,7 +77,7 @@ pub fn compute_spec_hlr_20_mav0_drop_malformed_msg_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_21_mav0_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In0 incoming event data port
   * @param api_Out0 outgoing event data port
   */
@@ -91,7 +91,7 @@ pub fn compute_spec_hlr_21_mav0_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_22_mav0_allow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In0 incoming event data port
   * @param api_Out0 outgoing event data port
   */
@@ -108,7 +108,7 @@ pub fn compute_spec_hlr_22_mav0_allow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_19_mav1_drop_mav_cmd_flash_bootloader
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_In1 incoming event data port
   * @param api_Out1 outgoing event data port
   */
@@ -125,7 +125,7 @@ pub fn compute_spec_hlr_19_mav1_drop_mav_cmd_flash_bootloader_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_20_mav1_drop_malformed_msg
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In1 incoming event data port
   * @param api_Out1 outgoing event data port
   */
@@ -141,7 +141,7 @@ pub fn compute_spec_hlr_20_mav1_drop_malformed_msg_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_21_mav1_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In1 incoming event data port
   * @param api_Out1 outgoing event data port
   */
@@ -155,7 +155,7 @@ pub fn compute_spec_hlr_21_mav1_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_22_mav1_allow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In1 incoming event data port
   * @param api_Out1 outgoing event data port
   */
@@ -172,7 +172,7 @@ pub fn compute_spec_hlr_22_mav1_allow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_19_mav2_drop_mav_cmd_flash_bootloader
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_In2 incoming event data port
   * @param api_Out2 outgoing event data port
   */
@@ -189,7 +189,7 @@ pub fn compute_spec_hlr_19_mav2_drop_mav_cmd_flash_bootloader_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_20_mav2_drop_malformed_msg
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In2 incoming event data port
   * @param api_Out2 outgoing event data port
   */
@@ -205,7 +205,7 @@ pub fn compute_spec_hlr_20_mav2_drop_malformed_msg_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_21_mav2_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In2 incoming event data port
   * @param api_Out2 outgoing event data port
   */
@@ -219,7 +219,7 @@ pub fn compute_spec_hlr_21_mav2_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_22_mav2_allow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In2 incoming event data port
   * @param api_Out2 outgoing event data port
   */
@@ -236,7 +236,7 @@ pub fn compute_spec_hlr_22_mav2_allow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_19_mav3_drop_mav_cmd_flash_bootloader
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_In3 incoming event data port
   * @param api_Out3 outgoing event data port
   */
@@ -253,7 +253,7 @@ pub fn compute_spec_hlr_19_mav3_drop_mav_cmd_flash_bootloader_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_20_mav3_drop_malformed_msg
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In3 incoming event data port
   * @param api_Out3 outgoing event data port
   */
@@ -269,7 +269,7 @@ pub fn compute_spec_hlr_20_mav3_drop_malformed_msg_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_21_mav3_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In3 incoming event data port
   * @param api_Out3 outgoing event data port
   */
@@ -283,7 +283,7 @@ pub fn compute_spec_hlr_21_mav3_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_22_mav3_allow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
   * @param api_In3 incoming event data port
   * @param api_Out3 outgoing event data port
   */

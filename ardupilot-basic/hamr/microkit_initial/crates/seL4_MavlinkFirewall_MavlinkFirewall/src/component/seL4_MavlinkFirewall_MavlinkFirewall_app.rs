@@ -42,70 +42,70 @@ impl seL4_MavlinkFirewall_MavlinkFirewall {
     ensures
       // BEGIN MARKER TIME TRIGGERED ENSURES
       // guarantee hlr_19_mav0_drop_mav_cmd_flash_bootloader
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
       api.In0.is_some() &&
         (msg_is_wellformed(api.In0.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api.In0.unwrap().payload)) ==>
         api.Out0.is_none(),
       // guarantee hlr_20_mav0_drop_malformed_msg
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In0.is_some() && !(msg_is_wellformed(api.In0.unwrap().payload)) ==>
         api.Out0.is_none(),
       // guarantee hlr_21_mav0_no_input
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In0.is_some() || api.Out0.is_none(),
       // guarantee hlr_22_mav0_allow
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In0.is_some() &&
         (msg_is_wellformed(api.In0.unwrap().payload) && !(msg_is_blacklisted(api.In0.unwrap().payload))) ==>
         api.Out0.is_some() && GumboLib::mav_input_eq_output_spec(api.In0.unwrap(), api.Out0.unwrap()),
       // guarantee hlr_19_mav1_drop_mav_cmd_flash_bootloader
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
       api.In1.is_some() &&
         (msg_is_wellformed(api.In1.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api.In1.unwrap().payload)) ==>
         api.Out1.is_none(),
       // guarantee hlr_20_mav1_drop_malformed_msg
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In1.is_some() && !(msg_is_wellformed(api.In1.unwrap().payload)) ==>
         api.Out1.is_none(),
       // guarantee hlr_21_mav1_no_input
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In1.is_some() || api.Out1.is_none(),
       // guarantee hlr_22_mav1_allow
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In1.is_some() &&
         (msg_is_wellformed(api.In1.unwrap().payload) && !(msg_is_blacklisted(api.In1.unwrap().payload))) ==>
         api.Out1.is_some() && GumboLib::mav_input_eq_output_spec(api.In1.unwrap(), api.Out1.unwrap()),
       // guarantee hlr_19_mav2_drop_mav_cmd_flash_bootloader
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
       api.In2.is_some() &&
         (msg_is_wellformed(api.In2.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api.In2.unwrap().payload)) ==>
         api.Out2.is_none(),
       // guarantee hlr_20_mav2_drop_malformed_msg
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In2.is_some() && !(msg_is_wellformed(api.In2.unwrap().payload)) ==>
         api.Out2.is_none(),
       // guarantee hlr_21_mav2_no_input
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In2.is_some() || api.Out2.is_none(),
       // guarantee hlr_22_mav2_allow
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In2.is_some() &&
         (msg_is_wellformed(api.In2.unwrap().payload) && !(msg_is_blacklisted(api.In2.unwrap().payload))) ==>
         api.Out2.is_some() && GumboLib::mav_input_eq_output_spec(api.In2.unwrap(), api.Out2.unwrap()),
       // guarantee hlr_19_mav3_drop_mav_cmd_flash_bootloader
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
       api.In3.is_some() &&
         (msg_is_wellformed(api.In3.unwrap().payload) && msg_is_mav_cmd_flash_bootloader(api.In3.unwrap().payload)) ==>
         api.Out3.is_none(),
       // guarantee hlr_20_mav3_drop_malformed_msg
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In3.is_some() && !(msg_is_wellformed(api.In3.unwrap().payload)) ==>
         api.Out3.is_none(),
       // guarantee hlr_21_mav3_no_input
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In3.is_some() || api.Out3.is_none(),
       // guarantee hlr_22_mav3_allow
-      //   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
+      //   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=7
       api.In3.is_some() &&
         (msg_is_wellformed(api.In3.unwrap().payload) && !(msg_is_blacklisted(api.In3.unwrap().payload))) ==>
         api.Out3.is_some() && GumboLib::mav_input_eq_output_spec(api.In3.unwrap(), api.Out3.unwrap()),

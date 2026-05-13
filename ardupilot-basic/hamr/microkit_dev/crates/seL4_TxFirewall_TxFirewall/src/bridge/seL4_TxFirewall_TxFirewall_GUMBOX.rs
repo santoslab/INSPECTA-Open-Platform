@@ -133,7 +133,7 @@ pub fn initialize_IEP_Post(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_07_tx0_can_send_valid_arp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn0 incoming event data port
   * @param api_EthernetFramesTxOut0 outgoing event data port
   */
@@ -151,7 +151,7 @@ pub fn compute_spec_hlr_07_tx0_can_send_valid_arp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_12_tx0_can_send_valid_ipv4
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn0 incoming event data port
   * @param api_EthernetFramesTxOut0 outgoing event data port
   */
@@ -169,7 +169,7 @@ pub fn compute_spec_hlr_12_tx0_can_send_valid_ipv4_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_14_tx0_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn0 incoming event data port
   * @param api_EthernetFramesTxOut0 outgoing event data port
   */
@@ -185,7 +185,7 @@ pub fn compute_spec_hlr_14_tx0_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_16_tx0_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn0 incoming event data port
   * @param api_EthernetFramesTxOut0 outgoing event data port
   */
@@ -199,7 +199,7 @@ pub fn compute_spec_hlr_16_tx0_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_07_tx1_can_send_valid_arp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn1 incoming event data port
   * @param api_EthernetFramesTxOut1 outgoing event data port
   */
@@ -217,7 +217,7 @@ pub fn compute_spec_hlr_07_tx1_can_send_valid_arp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_12_tx1_can_send_valid_ipv4
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn1 incoming event data port
   * @param api_EthernetFramesTxOut1 outgoing event data port
   */
@@ -235,7 +235,7 @@ pub fn compute_spec_hlr_12_tx1_can_send_valid_ipv4_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_14_tx1_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn1 incoming event data port
   * @param api_EthernetFramesTxOut1 outgoing event data port
   */
@@ -251,7 +251,7 @@ pub fn compute_spec_hlr_14_tx1_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_16_tx1_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn1 incoming event data port
   * @param api_EthernetFramesTxOut1 outgoing event data port
   */
@@ -265,7 +265,7 @@ pub fn compute_spec_hlr_16_tx1_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_07_tx2_can_send_valid_arp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn2 incoming event data port
   * @param api_EthernetFramesTxOut2 outgoing event data port
   */
@@ -283,7 +283,7 @@ pub fn compute_spec_hlr_07_tx2_can_send_valid_arp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_12_tx2_can_send_valid_ipv4
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn2 incoming event data port
   * @param api_EthernetFramesTxOut2 outgoing event data port
   */
@@ -301,7 +301,7 @@ pub fn compute_spec_hlr_12_tx2_can_send_valid_ipv4_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_14_tx2_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn2 incoming event data port
   * @param api_EthernetFramesTxOut2 outgoing event data port
   */
@@ -317,7 +317,7 @@ pub fn compute_spec_hlr_14_tx2_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_16_tx2_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn2 incoming event data port
   * @param api_EthernetFramesTxOut2 outgoing event data port
   */
@@ -331,7 +331,7 @@ pub fn compute_spec_hlr_16_tx2_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_07_tx3_can_send_valid_arp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn3 incoming event data port
   * @param api_EthernetFramesTxOut3 outgoing event data port
   */
@@ -349,7 +349,7 @@ pub fn compute_spec_hlr_07_tx3_can_send_valid_arp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_12_tx3_can_send_valid_ipv4
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=5
   * @param api_EthernetFramesTxIn3 incoming event data port
   * @param api_EthernetFramesTxOut3 outgoing event data port
   */
@@ -367,7 +367,7 @@ pub fn compute_spec_hlr_12_tx3_can_send_valid_ipv4_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_14_tx3_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn3 incoming event data port
   * @param api_EthernetFramesTxOut3 outgoing event data port
   */
@@ -383,7 +383,7 @@ pub fn compute_spec_hlr_14_tx3_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_16_tx3_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=6
   * @param api_EthernetFramesTxIn3 incoming event data port
   * @param api_EthernetFramesTxOut3 outgoing event data port
   */

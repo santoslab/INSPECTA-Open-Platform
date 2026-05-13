@@ -9,9 +9,14 @@ mod net;
 pub use net::{Address, ArpOp, HardwareType, Ipv4Address};
 pub use net::{Arp, EtherType, EthernetRepr, IpProtocol, Ipv4Repr, TcpRepr, UdpRepr};
 
-// Type definitions stay in verus! because spec functions use Verus-specific
-// arrow accessors (e.g. ->Ipv4_0) that are only generated inside verus!.
-// The parse() method is moved outside for mutation testing.
+// Type definitions stay in verus! because Verus only generates the arrow accessors
+// (e.g. ->Ipv4_0) and `is` variant tests for types defined inside the macro. These
+// are Verus-specific syntax that cannot be expressed with attributes. The parse()
+// method is moved outside for mutation testing.
+//
+// This is acceptable for mutation testing because the macro contains only data type
+// declarations and computed constants (no branching logic). All executable control
+// flow (parse, match arms) lives outside the macro using attribute syntax.
 verus! {
 
     #[cfg_attr(test, derive(PartialEq))]
@@ -114,6 +119,13 @@ impl EthFrame {
     }
 }
 
+// The verus! macro is required here because these items use Verus-specific syntax
+// (open spec fn, `is` variant tests, `->` variant field access, =~= extensional
+// equality) that does not parse as valid Rust, so the attribute forms cannot be used.
+//
+// This is acceptable for mutation testing because the macro contains only spec
+// functions (ghost code erased at runtime, validated by Verus verification rather
+// than runtime tests). All executable control flow lives outside the macro.
 verus! {
 
     pub open spec fn ipv4_valid_length(p: PacketType) -> bool

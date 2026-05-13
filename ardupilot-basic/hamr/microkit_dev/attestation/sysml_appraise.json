@@ -134,8 +134,6 @@
           "%%codegen_dir%%/crates/seL4_RxFirewall_RxFirewall/src/test/util/cb_apis.rs",
           "%%codegen_dir%%/crates/seL4_TxFirewall_TxFirewall/src/bridge/seL4_TxFirewall_TxFirewall_GUMBOX.rs",
           "%%codegen_dir%%/crates/seL4_TxFirewall_TxFirewall/src/test/util/cb_apis.rs",
-          "%%codegen_dir%%/crates/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver/src/bridge/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver_GUMBOX.rs",
-          "%%codegen_dir%%/crates/seL4_LowLevelEthernetDriver_LowLevelEthernetDriver/src/test/util/cb_apis.rs",
           "%%codegen_dir%%/microkit.system",
           "%%codegen_dir%%/microkit.dot"
         ],

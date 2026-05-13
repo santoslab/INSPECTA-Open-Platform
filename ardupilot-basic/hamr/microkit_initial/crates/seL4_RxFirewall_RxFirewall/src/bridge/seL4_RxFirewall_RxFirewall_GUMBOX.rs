@@ -14,132 +14,10 @@ macro_rules! impliesL {
   };
 }
 
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn0
-  *
-  * assume valid_message_port0
-  *   Only valid messages being sent to the RxFirewall Port 0
-  */
-pub fn I_Assm_EthernetFramesRxIn0(EthernetFramesRxIn0: SW::RawEthernetMessage) -> bool
-{
-  GumboLib::valid_arp(EthernetFramesRxIn0) |
-    (GumboLib::valid_ipv4_udp_mavlink(EthernetFramesRxIn0) |
-      (GumboLib::valid_ipv4_udp_port(EthernetFramesRxIn0) | !(GumboLib::rx_allow_outbound_frame(EthernetFramesRxIn0))))
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn0
-  *
-  * assume valid_message_port0
-  *   Only valid messages being sent to the RxFirewall Port 0
-  */
-pub fn I_Assm_Guard_EthernetFramesRxIn0(EthernetFramesRxIn0: Option<SW::RawEthernetMessage>) -> bool
-{
-  implies!(
-    EthernetFramesRxIn0.is_some(),
-    I_Assm_EthernetFramesRxIn0(EthernetFramesRxIn0.unwrap())
-  )
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn1
-  *
-  * assume valid_message_port1
-  *   Only valid messages being sent to the RxFirewall Port 1
-  */
-pub fn I_Assm_EthernetFramesRxIn1(EthernetFramesRxIn1: SW::RawEthernetMessage) -> bool
-{
-  GumboLib::valid_arp(EthernetFramesRxIn1) |
-    (GumboLib::valid_ipv4_udp_mavlink(EthernetFramesRxIn1) |
-      (GumboLib::valid_ipv4_udp_port(EthernetFramesRxIn1) | !(GumboLib::rx_allow_outbound_frame(EthernetFramesRxIn1))))
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn1
-  *
-  * assume valid_message_port1
-  *   Only valid messages being sent to the RxFirewall Port 1
-  */
-pub fn I_Assm_Guard_EthernetFramesRxIn1(EthernetFramesRxIn1: Option<SW::RawEthernetMessage>) -> bool
-{
-  implies!(
-    EthernetFramesRxIn1.is_some(),
-    I_Assm_EthernetFramesRxIn1(EthernetFramesRxIn1.unwrap())
-  )
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn2
-  *
-  * assume valid_message_port2
-  *   Only valid messages being sent to the RxFirewall Port 2
-  */
-pub fn I_Assm_EthernetFramesRxIn2(EthernetFramesRxIn2: SW::RawEthernetMessage) -> bool
-{
-  GumboLib::valid_arp(EthernetFramesRxIn2) |
-    (GumboLib::valid_ipv4_udp_mavlink(EthernetFramesRxIn2) |
-      (GumboLib::valid_ipv4_udp_port(EthernetFramesRxIn2) | !(GumboLib::rx_allow_outbound_frame(EthernetFramesRxIn2))))
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn2
-  *
-  * assume valid_message_port2
-  *   Only valid messages being sent to the RxFirewall Port 2
-  */
-pub fn I_Assm_Guard_EthernetFramesRxIn2(EthernetFramesRxIn2: Option<SW::RawEthernetMessage>) -> bool
-{
-  implies!(
-    EthernetFramesRxIn2.is_some(),
-    I_Assm_EthernetFramesRxIn2(EthernetFramesRxIn2.unwrap())
-  )
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn3
-  *
-  * assume valid_message_port3
-  *   Only valid messages being sent to the RxFirewall Port 3
-  */
-pub fn I_Assm_EthernetFramesRxIn3(EthernetFramesRxIn3: SW::RawEthernetMessage) -> bool
-{
-  GumboLib::valid_arp(EthernetFramesRxIn3) |
-    (GumboLib::valid_ipv4_udp_mavlink(EthernetFramesRxIn3) |
-      (GumboLib::valid_ipv4_udp_port(EthernetFramesRxIn3) | !(GumboLib::rx_allow_outbound_frame(EthernetFramesRxIn3))))
-}
-
-/** I-Assm: Integration constraint on RxFirewall's incoming event data port EthernetFramesRxIn3
-  *
-  * assume valid_message_port3
-  *   Only valid messages being sent to the RxFirewall Port 3
-  */
-pub fn I_Assm_Guard_EthernetFramesRxIn3(EthernetFramesRxIn3: Option<SW::RawEthernetMessage>) -> bool
-{
-  implies!(
-    EthernetFramesRxIn3.is_some(),
-    I_Assm_EthernetFramesRxIn3(EthernetFramesRxIn3.unwrap())
-  )
-}
-
-/** CEP-Pre: Compute Entrypoint Pre-Condition for RxFirewall
-  *
-  * @param api_EthernetFramesRxIn0 incoming event data port
-  * @param api_EthernetFramesRxIn1 incoming event data port
-  * @param api_EthernetFramesRxIn2 incoming event data port
-  * @param api_EthernetFramesRxIn3 incoming event data port
-  */
-pub fn compute_CEP_Pre(
-  api_EthernetFramesRxIn0: Option<SW::RawEthernetMessage>,
-  api_EthernetFramesRxIn1: Option<SW::RawEthernetMessage>,
-  api_EthernetFramesRxIn2: Option<SW::RawEthernetMessage>,
-  api_EthernetFramesRxIn3: Option<SW::RawEthernetMessage>) -> bool
-{
-  // I-Assm-Guard: Integration constraints for RxFirewall's incoming ports
-  let r0: bool = I_Assm_Guard_EthernetFramesRxIn0(api_EthernetFramesRxIn0);
-  let r1: bool = I_Assm_Guard_EthernetFramesRxIn1(api_EthernetFramesRxIn1);
-  let r2: bool = I_Assm_Guard_EthernetFramesRxIn2(api_EthernetFramesRxIn2);
-  let r3: bool = I_Assm_Guard_EthernetFramesRxIn3(api_EthernetFramesRxIn3);
-
-  return r0 && r1 && r2 && r3;
-}
-
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_05_rx0_can_send_arp_to_vmm
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn0 incoming event data port
   * @param api_MavlinkOut0 outgoing event data port
   * @param api_VmmOut0 outgoing event data port
@@ -159,7 +37,7 @@ pub fn compute_spec_hlr_05_rx0_can_send_arp_to_vmm_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_18_rx0_can_send_mavlink_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn0 incoming event data port
   * @param api_MavlinkOut0 outgoing event data port
   * @param api_VmmOut0 outgoing event data port
@@ -178,7 +56,7 @@ pub fn compute_spec_hlr_18_rx0_can_send_mavlink_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_13_rx0_can_send_ipv4_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn0 incoming event data port
   * @param api_MavlinkOut0 outgoing event data port
   * @param api_VmmOut0 outgoing event data port
@@ -198,7 +76,7 @@ pub fn compute_spec_hlr_13_rx0_can_send_ipv4_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_15_rx0_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn0 incoming event data port
   * @param api_MavlinkOut0 outgoing event data port
   * @param api_VmmOut0 outgoing event data port
@@ -216,7 +94,7 @@ pub fn compute_spec_hlr_15_rx0_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_17_rx0_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn0 incoming event data port
   * @param api_MavlinkOut0 outgoing event data port
   * @param api_VmmOut0 outgoing event data port
@@ -233,7 +111,7 @@ pub fn compute_spec_hlr_17_rx0_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_05_rx1_can_send_arp_to_vmm
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn1 incoming event data port
   * @param api_MavlinkOut1 outgoing event data port
   * @param api_VmmOut1 outgoing event data port
@@ -253,7 +131,7 @@ pub fn compute_spec_hlr_05_rx1_can_send_arp_to_vmm_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_18_rx1_can_send_mavlink_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn1 incoming event data port
   * @param api_MavlinkOut1 outgoing event data port
   * @param api_VmmOut1 outgoing event data port
@@ -272,7 +150,7 @@ pub fn compute_spec_hlr_18_rx1_can_send_mavlink_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_13_rx1_can_send_ipv4_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn1 incoming event data port
   * @param api_MavlinkOut1 outgoing event data port
   * @param api_VmmOut1 outgoing event data port
@@ -292,7 +170,7 @@ pub fn compute_spec_hlr_13_rx1_can_send_ipv4_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_15_rx1_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn1 incoming event data port
   * @param api_MavlinkOut1 outgoing event data port
   * @param api_VmmOut1 outgoing event data port
@@ -310,7 +188,7 @@ pub fn compute_spec_hlr_15_rx1_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_17_rx1_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn1 incoming event data port
   * @param api_MavlinkOut1 outgoing event data port
   * @param api_VmmOut1 outgoing event data port
@@ -327,7 +205,7 @@ pub fn compute_spec_hlr_17_rx1_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_05_rx2_can_send_arp_to_vmm
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn2 incoming event data port
   * @param api_MavlinkOut2 outgoing event data port
   * @param api_VmmOut2 outgoing event data port
@@ -347,7 +225,7 @@ pub fn compute_spec_hlr_05_rx2_can_send_arp_to_vmm_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_18_rx2_can_send_mavlink_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn2 incoming event data port
   * @param api_MavlinkOut2 outgoing event data port
   * @param api_VmmOut2 outgoing event data port
@@ -366,7 +244,7 @@ pub fn compute_spec_hlr_18_rx2_can_send_mavlink_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_13_rx2_can_send_ipv4_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn2 incoming event data port
   * @param api_MavlinkOut2 outgoing event data port
   * @param api_VmmOut2 outgoing event data port
@@ -386,7 +264,7 @@ pub fn compute_spec_hlr_13_rx2_can_send_ipv4_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_15_rx2_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn2 incoming event data port
   * @param api_MavlinkOut2 outgoing event data port
   * @param api_VmmOut2 outgoing event data port
@@ -404,7 +282,7 @@ pub fn compute_spec_hlr_15_rx2_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_17_rx2_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn2 incoming event data port
   * @param api_MavlinkOut2 outgoing event data port
   * @param api_VmmOut2 outgoing event data port
@@ -421,7 +299,7 @@ pub fn compute_spec_hlr_17_rx2_no_input_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_05_rx3_can_send_arp_to_vmm
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn3 incoming event data port
   * @param api_MavlinkOut3 outgoing event data port
   * @param api_VmmOut3 outgoing event data port
@@ -441,7 +319,7 @@ pub fn compute_spec_hlr_05_rx3_can_send_arp_to_vmm_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_18_rx3_can_send_mavlink_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn3 incoming event data port
   * @param api_MavlinkOut3 outgoing event data port
   * @param api_VmmOut3 outgoing event data port
@@ -460,7 +338,7 @@ pub fn compute_spec_hlr_18_rx3_can_send_mavlink_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_13_rx3_can_send_ipv4_udp
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=3
   * @param api_EthernetFramesRxIn3 incoming event data port
   * @param api_MavlinkOut3 outgoing event data port
   * @param api_VmmOut3 outgoing event data port
@@ -480,7 +358,7 @@ pub fn compute_spec_hlr_13_rx3_can_send_ipv4_udp_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_15_rx3_disallow
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn3 incoming event data port
   * @param api_MavlinkOut3 outgoing event data port
   * @param api_VmmOut3 outgoing event data port
@@ -498,7 +376,7 @@ pub fn compute_spec_hlr_15_rx3_disallow_guarantee(
 /** Compute Entrypoint Contract
   *
   * guarantee hlr_17_rx3_no_input
-  *   https://jasonbelt.github.io/inspecta-open-platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
+  *   https://loonwerks.com/INSPECTA-Open-Platform/ardupilot-basic/requirements/Inspecta-HLRs.pdf#page=4
   * @param api_EthernetFramesRxIn3 incoming event data port
   * @param api_MavlinkOut3 outgoing event data port
   * @param api_VmmOut3 outgoing event data port

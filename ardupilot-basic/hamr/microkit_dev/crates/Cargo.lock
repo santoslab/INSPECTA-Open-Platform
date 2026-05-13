@@ -845,7 +845,68 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "490dcfcbfef26be6800d11870ff2df8774fa6e86d047e3e8c8a76b25655e41ca"
 
 [[package]]
+name = "seL4_LowLevelEthernetDriver_LowLevelEthernetDriver"
+version = "0.1.0"
+dependencies = [
+ "GumboLib",
+ "data",
+ "env_logger",
+ "lazy_static",
+ "linux-raw-sys",
+ "log",
+ "once_cell",
+ "proptest",
+ "sel4",
+ "sel4-logging",
+ "serial_test",
+ "verus_builtin",
+ "verus_builtin_macros",
+ "vstd",
+]
+
+[[package]]
+name = "seL4_MavlinkFirewall_MavlinkFirewall"
+version = "0.1.0"
+dependencies = [
+ "GumboLib",
+ "data",
+ "env_logger",
+ "lazy_static",
+ "linux-raw-sys",
+ "log",
+ "once_cell",
+ "proptest",
+ "sel4",
+ "sel4-logging",
+ "serial_test",
+ "verus_builtin",
+ "verus_builtin_macros",
+ "vstd",
+]
+
+[[package]]
 name = "seL4_RxFirewall_RxFirewall"
+version = "0.1.0"
+dependencies = [
+ "GumboLib",
+ "data",
+ "env_logger",
+ "firewall-core",
+ "lazy_static",
+ "linux-raw-sys",
+ "log",
+ "once_cell",
+ "proptest",
+ "sel4",
+ "sel4-logging",
+ "serial_test",
+ "verus_builtin",
+ "verus_builtin_macros",
+ "vstd",
+]
+
+[[package]]
+name = "seL4_TxFirewall_TxFirewall"
 version = "0.1.0"
 dependencies = [
  "GumboLib",

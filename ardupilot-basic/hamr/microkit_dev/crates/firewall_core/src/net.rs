@@ -546,6 +546,17 @@ impl UdpRepr {
 // Verus spec functions and ghost impls
 // ============================================================
 
+// The verus! macro is required here because these items use Verus-specific syntax
+// (open spec fn, =~= extensional equality, seq![] literals, `is` variant tests) that
+// does not parse as valid Rust, so the attribute forms cannot be used. The ghost trait
+// impls (TryFromSpecImpl, FromSpecImpl) also use `open spec fn` and are gated behind
+// #[cfg(verus_keep_ghost)], making them purely verification-time constructs.
+//
+// This is acceptable for mutation testing because the macro contains only spec
+// functions and ghost trait impls (all erased at runtime, validated by Verus
+// verification rather than runtime tests), plus a single constant definition
+// (MAX_MTU). All executable control flow lives outside the macro using attribute
+// syntax, where mutation testing tools can operate normally.
 verus! {
 
     /// Define the max possible MTU. Use standard Jumbo size as maximum possible.

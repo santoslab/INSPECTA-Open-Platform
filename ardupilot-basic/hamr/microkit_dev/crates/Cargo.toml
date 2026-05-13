@@ -3,6 +3,9 @@ members = [
     "data",
     "GumboLib",
     "firewall_core",
+    "seL4_LowLevelEthernetDriver_LowLevelEthernetDriver",
+    "seL4_MavlinkFirewall_MavlinkFirewall",
     "seL4_RxFirewall_RxFirewall",
+    "seL4_TxFirewall_TxFirewall",
 ]
 resolver = "2"
